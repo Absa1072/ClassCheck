@@ -9,3 +9,6 @@ ClassCheck is a web-based platform that makes it easier for both students and te
 - **Instructor Dashboard** – Instructors can view and manage attendance records.  
 - **Attendance Reports** – Generate reports to analyze student participation.  
 - **Automated Syncing** – Attendance data is stored and updated in real-time.
+
+## License
+Have a look at the license file for details. 
