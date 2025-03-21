@@ -11,4 +11,4 @@ ClassCheck is a web-based platform that makes it easier for both students and te
 - **Automated Syncing** – Attendance data is stored and updated in real-time.
 
 ## License
-Have a look at the license file for details. 
+Have a look at the license file license file ![image](https://github.com/user-attachments/assets/242974e9-e407-48f4-a20c-154aa0a6650b) for details. 
