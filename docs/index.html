@@ -27,10 +27,39 @@
       width: 90%;
     }
 
+    .title-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
+
     h2 {
       color: #3b3b3b;
       font-size: 2rem;
-      margin-bottom: 10px;
+      margin: 0;
+    }
+
+    .checkmark path {
+      stroke: #f472b6;
+      stroke-width: 5;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 22;
+      stroke-dashoffset: 22;
+      transition: stroke-dashoffset 0.5s ease;
+    }
+
+    .title-wrapper:hover .checkmark path {
+      stroke-dashoffset: 0;
+    }
+
+    .checkmark {
+      width: 36px;
+      height: 36px;
     }
 
     p {
@@ -42,7 +71,7 @@
     .button {
       font-size: 16px;
       padding: 12px 24px;
-      background: #ffd5ec; /* light pink */
+      background: #ffd5ec;
       color: #333;
       border: none;
       border-radius: 30px;
@@ -73,9 +102,15 @@
 <body>
 
   <div class="container">
-    <h2>ClassCheck</h2>
-    <p>Welcome students and professors to your automated attendance tracker at Rutgers University!</p>
+    <div class="title-wrapper">
+      <h2>ClassCheck</h2>
+      <svg class="checkmark" viewBox="0 0 24 24">
+        <path d="M5 13l4 4L19 7" />
+      </svg>
+    </div>
     
+    <p>Welcome students and professors to your automated attendance tracker at Rutgers University!</p>
+
     <a href="studentOrProfessor.html"> 
       <button type="button" class="button">Login / Sign Up</button>
     </a>   
