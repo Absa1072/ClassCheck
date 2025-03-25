@@ -1,59 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Interface</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-            text-align: center;
-        }
-        .container {
-            width: 50%;
-            margin: auto;
-            background: white;
-            padding: 20px;
-            margin-top: 50px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-        }
-        .button {
-            padding: 10px 20px;
-            background: blue;
-            color: white;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        .button:hover {
-            background: darkblue;
-        }
-        input {
-            padding: 10px;
-            width: 80%;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Choose Role – ClassCheck</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Quicksand', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #fdf6f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: #ffffff;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      max-width: 500px;
+      width: 90%;
+    }
+
+    h2 {
+      color: #3b3b3b;
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+
+    p {
+      color: #666;
+      font-size: 1.1rem;
+      margin-bottom: 30px;
+    }
+
+    .button {
+      font-size: 16px;
+      padding: 12px 24px;
+      background: #fbcfe8; /* pastel pink */
+      color: #333;
+      border: none;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+      margin: 10px;
+      box-shadow: 0px 5px 12px rgba(0, 0, 0, 0.05);
+      width: 200px;
+    }
+
+    .button:hover {
+      background: #fde7f3;
+      transform: scale(1.05);
+    }
+
+    form {
+      margin-bottom: 15px;
+    }
+
+    @media (max-width: 480px) {
+      .button {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
 <body>
 
-    <div class="container">
-        <h2>Simple Interface</h2>
-        <p>Are you a Student or Professor</p>
-        <br>
-        <form action="studentLogin.html" method="GET"> 
-            <button type="submit" class="button">Student</button>
-        </form>
-        <form action="professorLogin.html" method="GET"> 
-            <button type="submit" class="button">Professor</button>
-        </form>
-    </div>
+  <div class="container">
+    <h2>Welcome to ClassCheck</h2>
+    <p>Are you a Student or a Professor?</p>
+
+    <form action="studentLogin.html" method="GET"> 
+      <button type="submit" class="button">Student</button>
+    </form>
+
+    <form action="professorLogin.html" method="GET"> 
+      <button type="submit" class="button">Professor</button>
+    </form>
+  </div>
 
 </body>
 </html>
