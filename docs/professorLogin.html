@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ClassCheck</title>
+  <title>Create Account – ClassCheck</title>
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
@@ -27,44 +27,85 @@
       width: 90%;
     }
 
+    .title-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
+
     h2 {
       color: #3b3b3b;
       font-size: 2rem;
-      margin-bottom: 10px;
+      margin: 0;
+    }
+
+    .checkmark path {
+      stroke: #f472b6;
+      stroke-width: 5;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 22;
+      stroke-dashoffset: 22;
+      transition: stroke-dashoffset 0.5s ease;
+    }
+
+    .title-wrapper:hover .checkmark path {
+      stroke-dashoffset: 0;
+    }
+
+    .checkmark {
+      width: 34px;
+      height: 34px;
     }
 
     p {
       color: #666;
       font-size: 1.1rem;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
+    }
+
+    input {
+      padding: 12px;
+      width: 90%;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-family: inherit;
+      background-color: #fefefe;
+      transition: border-color 0.3s;
+    }
+
+    input:focus {
+      border-color: #ffd5ec;
+      outline: none;
     }
 
     .button {
       font-size: 16px;
       padding: 12px 24px;
-      background: #ffd5ec; /* light pink */
+      background: #bae6fd;
       color: #333;
       border: none;
       border-radius: 30px;
       font-weight: 600;
       cursor: pointer;
       transition: background 0.3s ease, transform 0.2s ease;
-      margin: 10px;
+      margin-top: 20px;
       box-shadow: 0px 5px 12px rgba(0, 0, 0, 0.05);
     }
 
     .button:hover {
-      background: #ffe1f1;
+      background: #d0efff;
       transform: scale(1.05);
     }
 
-    form, a {
-      display: block;
-      margin-bottom: 10px;
-    }
-
     @media (max-width: 480px) {
-      .button {
+      input, .button {
         width: 100%;
       }
     }
@@ -73,20 +114,22 @@
 <body>
 
   <div class="container">
-    <h2>ClassCheck</h2>
-    <p>Welcome students and professors to your automated attendance tracker at Rutgers University!</p>
-    
-    <a href="studentOrProfessor.html"> 
-      <button type="button" class="button">Login / Sign Up</button>
-    </a>   
+    <div class="title-wrapper">
+      <h2>Create Account</h2>
+      <svg class="checkmark" viewBox="0 0 24 24">
+        <path d="M5 13l4 4L19 7" />
+      </svg>
+    </div>
 
-    <form action="tutorial.html" method="GET"> 
-      <button type="submit" class="button">Tutorial</button>
-    </form>
+    <p>Enter your login details below:</p>
 
-    <form action="FAQ.html" method="GET"> 
-      <button type="submit" class="button">FAQs</button>
-    </form>
+    <input type="text" placeholder="First Name" />
+    <input type="text" placeholder="Last Name" />
+    <input type="text" placeholder="NetID" />
+    <input type="email" placeholder="Rutgers Email" />
+
+    <br />
+    <button class="button">Create Account</button>
   </div>
 
 </body>
