@@ -9,6 +9,8 @@
 // locate you.
 
 // need to include an API key to integrate into code, just wanted to include this from Google as reference
+// API Key: AIzaSyCZz6vK3hk_UluFowXy0lPscMP3yUnWAyU
+// need to implement in the front end
 let map, infoWindow;
 
 function initMap() {
