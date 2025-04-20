@@ -118,6 +118,8 @@
     isLogin = !isLogin;
     document.getElementById("loginForm").style.display = isLogin ? "block" : "none";
     document.getElementById("signupForm").style.display = isLogin ? "none" : "block";
+    document.getElementById("loginMessage").style.display = isLogin ? "block" : "none";
+    document.getElementById("signupMessage").style.display = isLogin ? "none" : "block";
     event.target.innerText = isLogin ? "Switch to Sign Up" : "Switch to Login";
   }
 </script>
@@ -132,7 +134,9 @@
       </svg>
     </div>
 
-    <p>Let's get your profile set up in less than 2 minutes.</p>
+    <p id="loginMessage">Welcome back! Please log in to your account.</p>
+    <p id="signupMessage" style="display:none;">Let's get your profile set up in less than 2 minutes.</p>
+
 
     <!-- Login Form -->
     <form id="loginForm" class="active">
