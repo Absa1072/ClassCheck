@@ -111,6 +111,17 @@
     }
   </style>
 </head>
+<script>
+  let isLogin = true;
+
+  function toggleForms() {
+    isLogin = !isLogin;
+    document.getElementById("loginForm").style.display = isLogin ? "block" : "none";
+    document.getElementById("signupForm").style.display = isLogin ? "none" : "block";
+    event.target.innerText = isLogin ? "Switch to Sign Up" : "Switch to Login";
+  }
+</script>
+
 <body>
 
   <div class="container">
@@ -121,15 +132,25 @@
       </svg>
     </div>
 
-    <p>Enter your login details below:</p>
+    <!-- Login Form -->
+<form id="loginForm" class="active">
+  <input type="text" id="loginNetID" placeholder="NetID" required>
+  <input type="password" id="loginPassword" placeholder="Password" required>
+  <button type="submit" class="button">Login</button>
+</form>
 
-    <input type="text" placeholder="First Name" />
-    <input type="text" placeholder="Last Name" />
-    <input type="text" placeholder="NetID" />
-    <input type="email" placeholder="Rutgers Email" />
+<!-- Sign-Up Form -->
+<form id="signupForm" style="display:none;">
+  <input type="text" id="firstName" placeholder="First Name" required>
+  <input type="text" id="lastName" placeholder="Last Name" required>
+  <input type="text" id="signupNetID" placeholder="NetID" required>
+  <input type="email" id="email" placeholder="Rutgers Email" required>
+  <input type="password" id="signupPassword" placeholder="Create Password" required>
+  <button type="submit" class="button">Create Account</button>
+</form>
 
-    <br />
-    <button class="button">Create Account</button>
+<!-- Toggle Button -->
+<button class="button" style="background:#ffd5ec; margin-top:15px;" onclick="toggleForms()">Switch to Sign Up</button>
   </div>
 
 </body>
