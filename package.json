@@ -1,0 +1,33 @@
+{
+  "name": "classcheck-main",
+  "version": "1.0.0",
+  "description": "## Description  ClassCheck is a web-based platform that makes it easier for both students and teachers to track attendance. It aims to replace the manual attendance tracking by offering a user-friendly platform that records and stores a student’s attendance data.",
+  "main": "test_frontend.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Absa1072/ClassCheck.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Absa1072/ClassCheck/issues"
+  },
+  "homepage": "https://github.com/Absa1072/ClassCheck#readme",
+  "dependencies": {
+    "@auth0/auth0-spa-js": "^2.1.3",
+    "axios": "^1.8.4",
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2"
+  }
+}

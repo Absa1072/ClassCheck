@@ -141,7 +141,7 @@
 
     <!-- Login Form -->
 <form id="loginForm" class="active">
-  <input type="text" id="loginNetID" placeholder="NetID" required>
+  <input type="email" id="loginEmail" placeholder="Rutgers Email" required />
   <input type="password" id="loginPassword" placeholder="Password" required>
   <button type="submit" class="button">Login</button>
 </form>
@@ -159,6 +159,66 @@
 <!-- Toggle Button -->
 <button class="button" style="background:#ffd5ec; margin-top:15px;" onclick="toggleForms()">Switch to Sign Up</button>
   </div>
+
+ <script>
+    //colect login input and connect it to backend 
+    document.getElementById("loginForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const email = document.getElementById("loginEmail").value.trim();
+    const password = document.getElementById("loginPassword").value;
+
+    const response = await fetch("http://localhost:3000/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+  });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      alert("Login successful!");
+      console.log("Token:", result.token);
+      // might direct to dashboard 
+    } else {
+      alert("Login failed: " + (result.error?.error_description || result.error));
+    }
+});
+  </script>
+  
+  <script>
+    //collect signup input and connect it to backend 
+    document.getElementById("signupForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+  
+      const firstName = document.getElementById("firstName").value.trim();
+      const lastName = document.getElementById("lastName").value.trim();
+      const netID = document.getElementById("signupNetID").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("signupPassword").value;
+  
+      const response = await fetch("http://localhost:3000/api/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          firstName,
+          lastName,
+          netID,
+          email,
+          password
+        })
+      });
+  
+      const result = await response.json();
+  
+      if (response.ok) {
+        alert("🎉 Account created! You can now log in.");
+        toggleForms(); // switch back to login form
+      } else {
+        alert("Signup failed: " + (result.error?.message || result.error));
+      }
+    });
+  </script>
 
 </body>
 </html>
