@@ -159,32 +159,7 @@
     <button class="button" style="background:#ffd5ec; margin-top:15px;" onclick="toggleForms()">Switch to Sign Up</button>
   </div>
 
-  <!-- <script>
-    //colect login input and connect it to backend 
-    document.getElementById("loginForm").addEventListener("submit", async function (e) {
-    e.preventDefault();
 
-    const email = document.getElementById("loginEmail").value.trim();
-    const password = document.getElementById("loginPassword").value;
-
-    const response = await fetch("http://localhost:3000/api/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password })
-  });
-
-    const result = await response.json();
-
-    if (response.ok) {
-      alert(" Login successful!");
-      console.log("Token:", result.token);
-      // might direct to dashboard 
-    } else {
-      alert("Failed to log in!: " + (result.error?.error_description || result.error));
-    }
-});
-  </script> -->
-  
   <script>
     //collect signup input and connect it to backend 
     document.getElementById("signupForm").addEventListener("submit", async function (e) {
@@ -211,7 +186,7 @@
       const result = await response.json();
   
       if (response.ok) {
-        alert("🎉 Account created! You can now log in.");
+        alert("Account created! You can now log in.");
         toggleForms(); // switch back to login form
       } else {
         alert("failed to sign up!: " + (result.error?.message || result.error));
