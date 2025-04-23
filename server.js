@@ -1,33 +1,54 @@
-require('dotenv').config();
-const path = require('path');
 const express = require('express');
-const cors = require('cors');
-const { signup, login } = require('./authHandler');
-
 const app = express();
-app.use(cors());
-app.use(express.json());
 
-// Serve static files from the 'frontend' folder
-app.use(express.static(__dirname));
+app.get('/login', (req, res) => {
+  const redirectUrl =
+    "https://dev-csb64xqu8rysh5zp.us.auth0.com/authorize" +
+    "?response_type=code" +
+    "&client_id=VJwDlz26K2Duzl8GpWxOTHPpAnxs5nPE" +
+    "&redirect_uri=http://localhost:3000/docs" +
+    "&scope=offline_access openid profile email" +
+    "&audience=https://apiclasscheck.com/api/signup";
 
-app.post('/api/signup', signup);
-app.post('/api/login', login);
-
-//try
-// Serve static files if needed
-app.use(express.static(__dirname));
-
-// Route fallback for login form
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'studentLogin.html'));
+  res.redirect(redirectUrl);
 });
 
-app.post('/api/test', (req, res) => {
-  res.json({ message: "✅ test route is working" });
-});
-//endtry
 
-app.listen(3000, () => {
-  console.log('Backend running at http://localhost:3000');
+
+app.get('/token', async (req, res) => {
+  const code = req.query.code;
+  const role = req.query.state; // "student" or "professor"
+
+  const payload = new URLSearchParams({
+    grant_type: 'authorization_code',
+    client_id: 'VJwDlz26K2Duzl8GpWxOTHPpAnxs5nPE',
+    client_secret: 'mPurOLtaLvYeN1LyD9pT07HQs7cIufFV0iejj48xUnMzjw26jy4ErCsromQY8oVQ',
+    code: code,
+    redirect_uri: 'http://localhost:3000/docs'
+  });
+
+  try {
+    const response = await fetch('https://dev-csb64xqu8rysh5zp.us.auth0.com/oauth/token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: payload
+    });
+
+    const data = await response.json();
+    //res.json(data);
+    const accessToken = data.access_token;
+    res.redirect(`/docs?token=${accessToken}`);
+
+  } catch (err) {
+    console.error('Error:', err);
+    res.status(500).json({ error: 'Token exchange failed' });
+  }
 });
+
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}`);
+});
+
