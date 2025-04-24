@@ -7,7 +7,7 @@ router.get('/attendance/reports', (req, res) => {
   const { classId, date } = req.query;
 
   if (!classId || !date) {
-    return res.status(400).json({ error: 'Missing classId or date parameter' });
+    return res.status(400).json({ error: 'Missing classID or date parameter' });
   }
 
   const query = `
