@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Classes – ClassCheck</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background-color: #fdf6f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: #fff;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      text-align: center;
+      max-width: 600px;
+      width: 90%;
+    }
+
+    h2 {
+      margin-bottom: 10px;
+      color: #3b3b3b;
+    }
+
+    p {
+      color: #666;
+      font-size: 1.1rem;
+      margin-bottom: 30px;
+    }
+
+    .button {
+      font-size: 16px;
+      padding: 12px 24px;
+      background: #ffd5ec;
+      color: #333;
+      border: none;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+      margin: 10px 0;
+      display: block;
+      width: 100%;
+    }
+
+    .button:hover {
+      background: #ffe1f1;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Welcome, <span id="netID">student</span> 👋</h2>
+    <p>Here are your current classes:</p>
+
+    <div id="classList">
+      <!-- Buttons will be added dynamically -->
+    </div>
+  </div>
+
+  <script>
+    const netID = localStorage.getItem("netID") || "student";
+    document.getElementById("netID").textContent = netID;
+
+    const classes = [
+      "14:440:101 Introduction to Data-driven Design for Engineering Applications",
+      "01:160:159 General Chemistry for Engineers",
+      "01:160:171 Introduction to Experimentation",
+      "01:355:101 College Writing",
+      "01:640:151 Calculus for Mathematical and Physical Sciences",
+      "01:750:123 Analytical Physics I"
+    ];
+
+    const classListDiv = document.getElementById("classList");
+
+    classes.forEach(course => {
+      const btn = document.createElement("button");
+      btn.className = "button";
+      btn.textContent = course;
+      btn.onclick = () => {
+        localStorage.setItem("selectedClass", course);
+        window.location.href = "attendance.html"; // or wherever you'd like it to go
+      };
+      classListDiv.appendChild(btn);
+    });
+  </script>
+!--window.location.href= "markAttendance.html";
+</body>
+</html>
