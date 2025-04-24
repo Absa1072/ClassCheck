@@ -15,14 +15,13 @@ let map, infoWindow;
 
 function initMap() {
   map = new google.maps.Map(document.getElementById("map"), {
-    center: { lat: 40.5038, lng: -74.4628 },
-    zoom: 12,
+    center: { lat: -34.397, lng: 150.644 },
+    zoom: 6,
   });
   infoWindow = new google.maps.InfoWindow();
 
   const locationButton = document.getElementById("button");
 
-  locationButton.textContent = "Pan to Current Location";
   locationButton.classList.add("custom-map-control-button");
   map.controls[google.maps.ControlPosition.TOP_CENTER].push(
     locationButton
@@ -37,9 +36,10 @@ function initMap() {
           };
 
           infoWindow.setPosition(pos);
-          infoWindow.setContent("Location found.");
+          infoWindow.setContent(`Location found: (${pos.lat}, ${pos.lng})`);
           infoWindow.open(map);
           map.setCenter(pos);
+
         },
         () => {
           handleLocationError(true, infoWindow, map.getCenter());
@@ -61,5 +61,26 @@ function handleLocationError(browserHasGeolocation, infoWindow, pos) {
   );
   infoWindow.open(map);
 }
+
+function getCurrentLocation(callback) {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const pos = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        };
+        callback(pos);
+      },
+      (err) => {
+        console.error("Location error:", err);
+        alert("Unable to retrieve location.");
+      }
+    );
+  } else {
+    alert("Geolocation is not supported by your browser.");
+  }
+}
+
 
 window.initMap = initMap;
