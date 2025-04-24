@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Student Login</title>
+</head>
+<body>
+  <h2>Student Login</h2>
+  <p>Enter your NetID to continue:</p>
+
+  <input type="text" id="netID" placeholder="Enter NetID" />
+  <button onclick="loginAsStudent()">Continue</button>
+
+  <script>
+    function loginAsStudent() {
+      const netID = document.getElementById("netID").value;
+      if (netID) {
+        // Store NetID in localStorage
+        localStorage.setItem("loggedInUser", netID);
+        // Redirect to attendance page
+        window.location.href = "attendance.html";
+      } else {
+        alert("Please enter your NetID.");
+      }
+    }
+  </script>
+</body>
+</html>
