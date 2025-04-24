@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../database/db'); // ✅ Importing from database folder
+const db = require('../database/db'); 
 
 // UC2: Create Attendance Reports
 router.get('/attendance/reports', (req, res) => {
