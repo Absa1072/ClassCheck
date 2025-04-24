@@ -1,0 +1,4 @@
+const netID = localStorage.getItem("loggedInUser");
+if (!netID) {
+  window.location.href = "studentLogin.html"; // redirect if someone skips login
+}
