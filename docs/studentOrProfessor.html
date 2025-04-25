@@ -75,27 +75,23 @@
   <div class="container">
     <h2>Welcome to ClassCheck</h2>
     <p>Are you a Student or a Professor?</p>
-    <button class="button" onclick="redirectToAuth('student')">I'm a Student</button>
-    <button class="button" onclick="redirectToAuth('professor')">I'm a Professor</button>
+    <button class="button" type="button" onclick="redirectToAuth('student')">I'm a Student</button>
+    <button class="button" type="button" onclick="redirectToAuth('professor')">I'm a Professor</button>
   </div>
 
   <script>
-    function redirectToAuth(role) {
-      const authDomain = "https://dev-csb64xqu8rysh5zp.us.auth0.com/authorize";
-      const clientId = "VJwDlz26K2Duzl8GpWxOTHPpAnxs5nPE";
-      const redirectUri = "http://localhost:3000/token";
-      const audience = "https://apiclasscheck.com/api/signup";
+  function redirectToAuth(role) {
+    const returnTo = role === "student" ? "/myClasses.html" : "/index.html?role=professor";
 
-      const url = `${authDomain}?response_type=code` +
-                  `&client_id=${clientId}` +
-                  `&redirect_uri=${encodeURIComponent(redirectUri)}` +
-                  `&scope=openid profile email` +
-                  `&audience=${encodeURIComponent(audience)}` +
-                  `&state=${role}`; // track role through `state`
+    const baseLoginUrl = window.location.hostname.includes('localhost')
+      ? "http://localhost:3001/login"
+      : "https://absa1072.github.io/ClassCheck/";  
 
-      window.location.href = url;
-    }
-  </script>
+    const loginUrl = `${baseLoginUrl}?returnTo=${encodeURIComponent(returnTo)}`;
+    window.location.href = loginUrl;
+  }
+</script>
+
 
 </body>
 </html>
