@@ -1,5 +1,4 @@
 # Node dependencies
-node_modules/
 
 # Environment variables
 .env
@@ -14,10 +13,6 @@ node_modules/
 auth_config.json
 
 authHandler.js
-
-server.js
-
-CC_logo.png
 
 simplegirl.png
 
