@@ -81,7 +81,7 @@
 
   <script>
   function redirectToAuth(role) {
-    const returnTo = role === "student" ? "/myClasses.html" : "/index.html?role=professor";
+    const returnTo = role === "student" ? "myClasses.html" : "index.html?role=professor";
 
     const baseLoginUrl = window.location.hostname.includes('localhost')
       ? "http://localhost:3001/login"

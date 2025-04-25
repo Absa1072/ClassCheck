@@ -43,7 +43,7 @@ app.use("/", indexRouter);
 //test login
 app.get('/login', (req, res) => {
     const { returnTo } = req.query;
-    const redirectTo = returnTo || '/index.html';
+    const redirectTo = returnTo || 'index.html';
     res.oidc.login({ returnTo: redirectTo });
   });
 
