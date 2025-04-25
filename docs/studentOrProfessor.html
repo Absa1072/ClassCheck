@@ -79,7 +79,7 @@
     <button class="button" type="button" onclick="redirectToAuth('professor')">I'm a Professor</button>
   </div>
 
-  <script>
+<!--   <script>
   function redirectToAuth(role) {
     const returnTo = role === "student" ? "myClasses.html" : "index.html?role=professor";
 
@@ -90,6 +90,28 @@
     const loginUrl = `${baseLoginUrl}?returnTo=${encodeURIComponent(returnTo)}`;
     window.location.href = loginUrl;
   }
+</script> -->
+  <script>
+function redirectToAuth(role) {
+  const authDomain = "https://dev-csb64xqu8rysh5zp.us.auth0.com/authorize";
+  const clientId = "VJwDlz26K2Duzl8GpWxOTHPpAnxs5nPE";
+  const audience = "https://apiclasscheck.com/api/signup";
+
+  const redirectUri = window.location.hostname.includes('localhost')
+    ? "http://localhost:3001/callback"
+    : "https://absa1072.github.io/ClassCheck/callback.html";  
+
+  const url = `${authDomain}?response_type=code` +
+              `&client_id=${clientId}` +
+              `&redirect_uri=${encodeURIComponent(redirectUri)}` +
+              `&scope=openid profile email` +
+              `&audience=${encodeURIComponent(audience)}` +
+              `&state=${role}`;
+
+  console.log("Redirecting to: ", url);
+
+  window.location.href = url; 
+}
 </script>
 
 
