@@ -55,12 +55,37 @@
     .button:hover {
       background: #ffe1f1;
       transform: scale(1.05);
+
+    .logout-button {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      background: #ffd5ec;
+      color: #333;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+      box-shadow: 0px 5px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .logout-button:hover {
+      background: #ffe1f1;
+      transform: scale(1.05);
+    }
+
     }
   </style>
 </head>
 <body>
 
   <div class="container">
+
+    <button id="logoutButton" class="logout-button"> Logout</button>
+
    <h2>Welcome, <span id="netID">student</span> 👋</h2>
    
     <p>Here are your current classes:</p>
