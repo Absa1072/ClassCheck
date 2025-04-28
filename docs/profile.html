@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Complete Profile – ClassCheck</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background-color: #fdf6f0;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: #ffffff;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      max-width: 600px;
+      width: 90%;
+    }
+
+    h2 {
+      color: #3b3b3b;
+      font-size: 2rem;
+      margin-bottom: 20px;
+    }
+
+    input, select {
+      padding: 12px;
+      width: 85%;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-family: inherit;
+      background-color: #fefefe;
+    }
+
+    select {
+      height: 120px;
+    }
+
+    .button {
+      font-size: 16px;
+      padding: 12px 24px;
+      background: #ffd5ec;
+      color: #333;
+      border: none;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+      margin-top: 20px;
+      box-shadow: 0px 5px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .button:hover {
+      background: #ffe1f1;
+      transform: scale(1.05);
+    }
+
+    @media (max-width: 480px) {
+      input, select, .button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+    <div class="container">
+      <h2>Complete Your Profile</h2>
+  
+      <input type="text" id="firstName" placeholder="First Name" required /><br>
+      <input type="text" id="lastName" placeholder="Last Name" required /><br>
+      <input type="text" id="netID" placeholder="NetID" required /><br>
+      <br><br>
+  
+      <label style="font-weight:600;">Select Your Classes:</label><br/><br/>
+
+      <div id="classCheckboxes" style="text-align: left; display: inline-block; line-height: 2;">
+        <label style="display: flex; align-items: center; margin-bottom: 10px;">
+          <input type="checkbox" name="class" value="14:440:101 Introduction to Data-driven Design" style="margin-right:10px;" />
+          14:440:101 Introduction to Data-driven Design
+        </label>
+        
+        <label style="display: flex; align-items: center; margin-bottom: 10px;">
+          <input type="checkbox" name="class" value="01:160:159 General Chemistry for Engineers" style="margin-right:10px;" />
+          01:160:159 General Chemistry for Engineers
+        </label>
+        
+        <label style="display: flex; align-items: center; margin-bottom: 10px;">
+          <input type="checkbox" name="class" value="01:160:171 Introduction to Experimentation" style="margin-right:10px;" />
+          01:160:171 Introduction to Experimentation
+        </label>
+        
+        <label style="display: flex; align-items: center; margin-bottom: 10px;">
+          <input type="checkbox" name="class" value="01:355:101 College Writing" style="margin-right:10px;" />
+          01:355:101 College Writing
+        </label>
+        
+        <label style="display: flex; align-items: center; margin-bottom: 10px;">
+          <input type="checkbox" name="class" value="01:640:151 Calculus" style="margin-right:10px;" />
+          01:640:151 Calculus
+        </label>
+        
+        <label style="display: flex; align-items: center; margin-bottom: 10px;">
+          <input type="checkbox" name="class" value="01:750:123 Analytical Physics 1" style="margin-right:10px;" />
+          01:750:123 Analytical Physics 1
+        </label>
+      </div>
+      
+      <br>
+  
+      <button class="button" onclick="submitProfile()">Save Profile</button>
+  
+    </div>
+  
+    <script>
+    function submitProfile() {
+      const firstName = document.getElementById('firstName').value.trim();
+      const lastName = document.getElementById('lastName').value.trim();
+      const netID = document.getElementById('netID').value.trim();
+      const classOptions = document.getElementById('classSelect');
+      const selectedClasses = Array.from(classOptions.selectedOptions).map(option => option.text);
+
+      if (!firstName || !lastName || !netID || selectedClasses.length === 0) {
+        alert('Please complete all fields and select at least one class.');
+        return;
+      }
+
+      const profile = {
+        firstName,
+        lastName,
+        netID,
+        classes: selectedClasses
+      };
+
+      console.log('Profile Saved:', profile);
+      localStorage.setItem('userProfile', JSON.stringify(profile));
+
+      alert('Profile completed successfully!');
+      // Redirect where you want next, for example:
+       window.location.href = "myClasses.html";
+    }
+  </script>
+
+</body>
+</html>
