@@ -95,31 +95,40 @@
     </div>
   </div>
 
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
+  
   <script>
+
+    const firebaseConfig = {
+    apiKey: "AIzaSyC59MPssGSBhB4R4jDYjWv-D-hG1gl0hEA",
+    authDomain: "causal-cacao-457203-s1.firebaseapp.com",
+    databaseURL: "https://causal-cacao-457203-s1-default-rtdb.firebaseio.com",
+    projectId: "causal-cacao-457203-s1"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    
     const netID = localStorage.getItem("netID") || "student";
     document.getElementById("netID").textContent = netID;
 
-    const classes = [
-      "14:440:101 Introduction to Data-driven Design for Engineering Applications",
-      "01:160:159 General Chemistry for Engineers",
-      "01:160:171 Introduction to Experimentation",
-      "01:355:101 College Writing",
-      "01:640:151 Calculus for Mathematical and Physical Sciences",
-      "01:750:123 Analytical Physics I"
-    ];
-
     const classListDiv = document.getElementById("classList");
 
-    classes.forEach(course => {
-      const btn = document.createElement("button");
-      btn.className = "button";
-      btn.textContent = course;
-      btn.onclick = () => {
-        localStorage.setItem("selectedClass", course);
-        window.location.href = "attendance.html"; // or wherever you'd like it to go
-      };
-      classListDiv.appendChild(btn);
-    });
+    if (student.classes && Array.isArray(student.classes)) {
+        student.classes.forEach(className => {
+          const btn = document.createElement('button');
+          btn.className = "class-button";
+          btn.innerText = className;
+          btn.onclick = function() {
+            localStorage.setItem('selectedClass', className);
+            window.location.href = "markAttendance.html";
+          };
+          classListDiv.appendChild(btn);
+        });
+      } else {
+        classListDiv.innerText = "No classes found.";
+      }
   </script>
   <script>
   function logout() {
