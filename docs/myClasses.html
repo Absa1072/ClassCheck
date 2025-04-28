@@ -115,7 +115,11 @@
 
     const classListDiv = document.getElementById("classList");
 
-    if (student.classes && Array.isArray(student.classes)) {
+    firebase.database().ref("Users/" + netID).once("value")
+    .then(snapshot => {
+      const student = snapshot.val();
+    
+    if (student && student.classes && Array.isArray(student.classes)) {
         student.classes.forEach(className => {
           const btn = document.createElement('button');
           btn.className = "class-button";
@@ -129,6 +133,7 @@
       } else {
         classListDiv.innerText = "No classes found.";
       }
+      });
   </script>
   <script>
   function logout() {
