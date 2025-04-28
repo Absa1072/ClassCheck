@@ -95,7 +95,9 @@
 
   <input type="text" id="firstName" placeholder="First Name" required /><br>
   <input type="text" id="lastName" placeholder="Last Name" required /><br>
+  <input type="text" id="email" placeholder="Email" required /><br>
   <input type="text" id="netID" placeholder="NetID" required /><br>
+  
 
   <br><br>
 
@@ -161,13 +163,14 @@
   async function submitProfile() {
   const firstName = document.getElementById('firstName').value.trim();
   const lastName = document.getElementById('lastName').value.trim();
+  const email = document.getElementById('email').value.trim();
   const netID = document.getElementById('netID').value.trim();
   
   // Get selected classes from checkboxes
   const checkboxes = document.querySelectorAll('input[name="class"]:checked');
   const selectedClasses = Array.from(checkboxes).map(cb => cb.value);
 
-  if (!firstName || !lastName || !netID || selectedClasses.length === 0) {
+  if (!firstName || !lastName || !email || !netID || selectedClasses.length === 0) {
     alert('Please complete all fields and select at least one class.');
     return;
   }
@@ -175,6 +178,7 @@
   const profile = {
     firstName,
     lastName,
+    email,
     netID,
     classes: selectedClasses,
     role: "student"
