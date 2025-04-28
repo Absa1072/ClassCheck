@@ -196,6 +196,9 @@
       alert('Failed to save profile. Try again.');
     }
 }
+const netID = document.getElementById('netID').value.trim(); // or however you collect it
+localStorage.setItem("netID", netID);
+
 </script>
 
 </body>
