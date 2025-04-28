@@ -138,8 +138,27 @@
   <button class="button" onclick="submitProfile()">Save Profile</button>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
+
 <script>
-function submitProfile() {
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyC59MPssGSBhB4R4jDYjWv-D-hG1gl0hEA",
+    authDomain: "causal-cacao-457203-s1.firebaseapp.com",
+    databaseURL: "https://causal-cacao-457203-s1-default-rtdb.firebaseio.com",
+    projectId: "causal-cacao-457203-s1",
+    storageBucket: "causal-cacao-457203-s1.appspot.com",
+    messagingSenderId: "604345231228",
+    appId: "1:604345231228:web:c61b68eccff94d1d5826f9",
+    measurementId: "G-MJMBCWMNKP"
+  };
+
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+  
+  async function submitProfile() {
   const firstName = document.getElementById('firstName').value.trim();
   const lastName = document.getElementById('lastName').value.trim();
   const netID = document.getElementById('netID').value.trim();
@@ -158,13 +177,20 @@ function submitProfile() {
     lastName,
     netID,
     classes: selectedClasses
+    role: "student"
   };
 
-  console.log('Profile Saved:', profile);
-  localStorage.setItem('userProfile', JSON.stringify(profile));
+  try {
+      await db.ref("Users/" + netID).set(profile);
+      console.log('Profile Saved:', profile);
+      localStorage.setItem('userProfile', JSON.stringify(profile));
 
-  alert('Profile completed successfully!');
-  window.location.href = "myClasses.html"; // Redirect after saving
+      alert(' Profile completed!');
+      window.location.href = "myClasses.html"; // Redirect to user dashboard
+    } catch (error) {
+      console.error("Error saving profile:", error);
+      alert('Failed to save profile. Try again.');
+    }
 }
 </script>
 
