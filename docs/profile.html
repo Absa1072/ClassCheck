@@ -10,11 +10,7 @@
       font-family: 'Quicksand', sans-serif;
       background-color: #fdf6f0;
       margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+      padding: 30px; /* Small padding around */
     }
 
     .container {
@@ -22,30 +18,27 @@
       padding: 40px;
       border-radius: 20px;
       box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.1);
-      text-align: center;
       max-width: 600px;
-      width: 90%;
+      width: 100%;
+      text-align: left; /* Left-align text */
     }
 
     h2 {
       color: #3b3b3b;
       font-size: 2rem;
       margin-bottom: 20px;
+      text-align: left;
     }
 
-    input, select {
+    input[type="text"] {
       padding: 12px;
-      width: 85%;
+      width: 95%;
       margin: 10px 0;
       border: 1px solid #ccc;
       border-radius: 10px;
       font-size: 1rem;
       font-family: inherit;
       background-color: #fefefe;
-    }
-
-    select {
-      height: 120px;
     }
 
     .button {
@@ -67,8 +60,20 @@
       transform: scale(1.05);
     }
 
+    .class-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+      font-size: 1rem;
+    }
+
+    .class-item input[type="checkbox"] {
+      margin-right: 10px;
+      transform: scale(1.2);
+    }
+
     @media (max-width: 480px) {
-      input, select, .button {
+      input[type="text"], .button {
         width: 100%;
       }
     }
@@ -76,82 +81,84 @@
 </head>
 <body>
 
-    <div class="container">
-      <h2>Complete Your Profile</h2>
-  
-      <input type="text" id="firstName" placeholder="First Name" required /><br>
-      <input type="text" id="lastName" placeholder="Last Name" required /><br>
-      <input type="text" id="netID" placeholder="NetID" required /><br>
-      <br><br>
-  
-      <label style="font-weight:600;">Select Your Classes:</label><br/><br/>
+<div class="container">
+  <h2>Complete Your Profile</h2>
 
-      <div id="classCheckboxes" style="text-align: left; display: inline-block; line-height: 2;">
-        <label style="display: flex; align-items: center; margin-bottom: 10px;">
-          <input type="checkbox" name="class" value="14:440:101 Introduction to Data-driven Design" style="margin-right:10px;" />
-          14:440:101 Introduction to Data-driven Design
-        </label>
-        
-        <label style="display: flex; align-items: center; margin-bottom: 10px;">
-          <input type="checkbox" name="class" value="01:160:159 General Chemistry for Engineers" style="margin-right:10px;" />
-          01:160:159 General Chemistry for Engineers
-        </label>
-        
-        <label style="display: flex; align-items: center; margin-bottom: 10px;">
-          <input type="checkbox" name="class" value="01:160:171 Introduction to Experimentation" style="margin-right:10px;" />
-          01:160:171 Introduction to Experimentation
-        </label>
-        
-        <label style="display: flex; align-items: center; margin-bottom: 10px;">
-          <input type="checkbox" name="class" value="01:355:101 College Writing" style="margin-right:10px;" />
-          01:355:101 College Writing
-        </label>
-        
-        <label style="display: flex; align-items: center; margin-bottom: 10px;">
-          <input type="checkbox" name="class" value="01:640:151 Calculus" style="margin-right:10px;" />
-          01:640:151 Calculus
-        </label>
-        
-        <label style="display: flex; align-items: center; margin-bottom: 10px;">
-          <input type="checkbox" name="class" value="01:750:123 Analytical Physics 1" style="margin-right:10px;" />
-          01:750:123 Analytical Physics 1
-        </label>
-      </div>
-      
-      <br>
-  
-      <button class="button" onclick="submitProfile()">Save Profile</button>
-  
+  <input type="text" id="firstName" placeholder="First Name" required /><br>
+  <input type="text" id="lastName" placeholder="Last Name" required /><br>
+  <input type="text" id="netID" placeholder="NetID" required /><br>
+
+  <br><br>
+
+  <label style="font-weight:600;">Select Your Classes:</label><br/><br/>
+
+  <div id="classCheckboxes">
+    <div class="class-item">
+      <input type="checkbox" name="class" value="14:440:101 Introduction to Data-driven Design" />
+      <label for="class1">14:440:101 Introduction to Data-driven Design</label>
     </div>
+
+    <div class="class-item">
+      <input type="checkbox" name="class" value="01:160:159 General Chemistry for Engineers" />
+      <label for="class2">01:160:159 General Chemistry for Engineers</label>
+    </div>
+
+    <div class="class-item">
+      <input type="checkbox" name="class" value="01:160:171 Introduction to Experimentation" />
+      <label for="class3">01:160:171 Introduction to Experimentation</label>
+    </div>
+
+    <div class="class-item">
+      <input type="checkbox" name="class" value="01:355:101 College Writing" />
+      <label for="class4">01:355:101 College Writing</label>
+    </div>
+
+    <div class="class-item">
+      <input type="checkbox" name="class" value="01:640:151 Calculus" />
+      <label for="class5">01:640:151 Calculus</label>
+    </div>
+
+    <div class="class-item">
+      <input type="checkbox" name="class" value="01:750:123 Analytical Physics 1" />
+      <label for="class6">01:750:123 Analytical Physics 1</label>
+    </div>
+  </div>
+
+  <br>
+
+  <button class="button" onclick="submitProfile()">Save Profile</button>
+</div>
+
+<script>
+function submitProfile() {
+  const firstName = document.getElementById('firstName').value.trim();
+  const lastName = document.getElementById('lastName').value.trim();
+  const netID = document.getElementById('netID').value.trim();
   
-    <script>
-    function submitProfile() {
-      const firstName = document.getElementById('firstName').value.trim();
-      const lastName = document.getElementById('lastName').value.trim();
-      const netID = document.getElementById('netID').value.trim();
-      const classOptions = document.getElementById('classSelect');
-      const selectedClasses = Array.from(classOptions.selectedOptions).map(option => option.text);
+  // Get selected classes from checkboxes
+  const checkboxes = document.querySelectorAll('input[name="class"]:checked');
+  const selectedClasses = Array.from(checkboxes).map(cb => cb.value);
 
-      if (!firstName || !lastName || !netID || selectedClasses.length === 0) {
-        alert('Please complete all fields and select at least one class.');
-        return;
-      }
+  if (!firstName || !lastName || !netID || selectedClasses.length === 0) {
+    alert('Please complete all fields and select at least one class.');
+    return;
+  }
 
-      const profile = {
-        firstName,
-        lastName,
-        netID,
-        classes: selectedClasses
-      };
+  const profile = {
+    firstName,
+    lastName,
+    netID,
+    classes: selectedClasses
+  };
 
-      console.log('Profile Saved:', profile);
-      localStorage.setItem('userProfile', JSON.stringify(profile));
+  console.log('Profile Saved:', profile);
+  localStorage.setItem('userProfile', JSON.stringify(profile));
 
-      alert('Profile completed successfully!');
-      // Redirect where you want next, for example:
-       window.location.href = "myClasses.html";
-    }
-  </script>
+  alert('Profile completed successfully!');
+  window.location.href = "myClasses.html"; // Redirect after saving
+}
+</script>
 
 </body>
 </html>
+
