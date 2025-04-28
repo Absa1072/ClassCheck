@@ -132,8 +132,16 @@
         });
       } else {
         classListDiv.innerText = "No classes found.";
-      }
+      } 
+    })
+      .catch(error => {
+        console.error("Failed to load student info:", error);
+        classListDiv.innerText = "Failed to load classes.";
       });
+  } else {
+    classListDiv.innerText = "Please log in first.";
+    window.location.href = "studentLogin.html";
+  }
   </script>
   <script>
   function logout() {
