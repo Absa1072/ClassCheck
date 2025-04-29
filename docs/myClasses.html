@@ -110,59 +110,50 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     
-    let netID = localStorage.getItem("netID");
+    fetch("/current-user")
+    .then(res => res.json())
+    .then(user => {
+      if (user && user.email) {
+        const netID = user.email.split("@")[0];
+        loadClasses(netID);
+      } else {
+        alert("You must be logged in to view your classes.");
+        window.location.href = "studentLogin.html";
+      }
+    })
+    .catch(err => {
+      console.error("Error getting current user:", err);
+      alert("Error verifying login. Redirecting...");
+      window.location.href = "studentLogin.html";
+    });
 
-    if(!netID){
-      fetch("/current-user")
-        .then(res => res.json())
-        .then(data => {
-          if(data.netID){
-          localStorage.setItem("netID", data.netID);
-          netID = data.netID;
-          loadClasses(netID);
-        } else {
-          alert("Unable to get the netID from login.");
-          window.location.href = "studentOrProfessor.html";
-        }
-        })
-        .catch(err => {
-          console.error("Error fetching netID", err);
-          window.location.href = "studentOrProfessor.html";
-        });
-    } else {
-      loadClasses(netID);
-    }
-
-    function loadClasses(netID){
+  function loadClasses(netID) {
     const classListDiv = document.getElementById("classList");
 
     firebase.database().ref("Users/" + netID).once("value")
-    .then(snapshot => {
-      const student = snapshot.val();
-      document.getElementById("firstName").textContent = student.firstName || netID;
+      .then(snapshot => {
+        const student = snapshot.val();
+        document.getElementById("firstName").textContent = student?.firstName || netID;
 
-    
-    if (student && student.classes && Array.isArray(student.classes)) {
-        student.classes.forEach(className => {
-          const btn = document.createElement('button');
-          btn.className = "class-button";
-          btn.innerText = className;
-          btn.onclick = function() {
-            localStorage.setItem('selectedClass', className);
-            window.location.href = "markAttendance.html";
-          };
-          classListDiv.appendChild(btn);
-        });
-      } else {
-        classListDiv.innerText = "No classes found.";
-      } 
-    })
+        if (student?.classes?.length) {
+          student.classes.forEach(className => {
+            const btn = document.createElement("button");
+            btn.className = "button";
+            btn.textContent = className;
+            btn.onclick = () => {
+              localStorage.setItem("selectedClass", className);
+              window.location.href = "markAttendance.html";
+            };
+            classListDiv.appendChild(btn);
+          });
+        } else {
+          classListDiv.innerText = "No classes found.";
+        }
+      })
       .catch(error => {
         console.error("Failed to load student info:", error);
-        classListDiv.innerText = "Failed to load classes.";
+        classListDiv.innerText = "Error loading classes.";
       });
-    // classListDiv.innerText = "Please log in first.";
-    // window.location.href = "myClasses.html";
   }
   </script>
   <script>
