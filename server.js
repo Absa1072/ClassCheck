@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const { auth } = require('express-openid-connect');
+const session = require("express-session");
 const app = express();
 
 app.use('/docs',express.static(path.join(__dirname, 'docs')));
@@ -30,6 +31,15 @@ app.get('/profile', requiresAuth(), (req, res) => {
   res.send(JSON.stringify(req.oidc.user));
 });
 
+app.get('/current-user', requiresAuth(), (req, res) => {
+  const email = req.oidc.user.email;
+  const netID = email.split('@')[0];
+  req.json({netID});
+});
+
 app.listen(3000, () => {
   console.log(`Server running at http://localhost:3000`);
 });
+
+
+
