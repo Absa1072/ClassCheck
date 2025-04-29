@@ -155,7 +155,7 @@
   if (!courseName) {
     loadingEl.textContent = "No class selected. Please return to My Classes.";
   } else {
-    db.ref(`ClassLocations/${courseName}`).once('value').then(snapshot => {
+    db.ref(`Classes/${courseName}`).once('value').then(snapshot => {
       if (snapshot.exists()) {
         const classLocation = snapshot.val();
         console.log("Fetched class location:", classLocation);
