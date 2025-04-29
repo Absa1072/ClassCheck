@@ -52,7 +52,7 @@
       width: 100%;
     }
 
-    .button:hover {
+    .logout-button:hover {
       background: #ffe1f1;
       transform: scale(1.05);
     }
@@ -61,6 +61,9 @@
 <body>
 
   <div class="container">
+    <button id="logoutButton" class="logout-button">Logout</button>
+
+    
     <h2>Welcome, <span id="name">...</span> </h2>
     <p>Here are your current classes:</p>
 
@@ -119,6 +122,14 @@
     }).catch(error => {
       console.error(error);
     });
+
+    function logout() {
+      const returnTo = window.location.hostname.includes('localhost') 
+        ? "http://localhost:3001/"
+        : "https://absa1072.github.io/ClassCheck/";
+
+      window.location.href = `https://dev-csb64xqu8rysh5zp.us.auth0.com/v2/logout?client_id=VJwDlz26K2Duzl8GpWxOTHPpAnxs5nPE&returnTo=${encodeURIComponent(returnTo)}`;
+    }
     </script>
     
 </body>
