@@ -95,9 +95,8 @@
 
   <input type="text" id="firstName" placeholder="First Name" required /><br>
   <input type="text" id="lastName" placeholder="Last Name" required /><br>
-  <input type="text" id="email" placeholder="Email" required /><br>
   <input type="text" id="netID" placeholder="NetID" required /><br>
-  
+  <input type="password" id="password" placeholder="Password" required /><br>
 
   <br><br>
 
@@ -163,14 +162,14 @@
   async function submitProfile() {
   const firstName = document.getElementById('firstName').value.trim();
   const lastName = document.getElementById('lastName').value.trim();
-  const email = document.getElementById('email').value.trim();
   const netID = document.getElementById('netID').value.trim();
+  const password = document.getElemenyById('password').value.trim();
   
   // Get selected classes from checkboxes
   const checkboxes = document.querySelectorAll('input[name="class"]:checked');
   const selectedClasses = Array.from(checkboxes).map(cb => cb.value);
 
-  if (!firstName || !lastName || !email || !netID || selectedClasses.length === 0) {
+  if (!firstName || !lastName || !netID || !password || selectedClasses.length === 0) {
     alert('Please complete all fields and select at least one class.');
     return;
   }
@@ -178,8 +177,8 @@
   const profile = {
     firstName,
     lastName,
-    email,
     netID,
+    password,
     classes: selectedClasses,
     role: "student"
   };
@@ -190,13 +189,16 @@
       localStorage.setItem('userProfile', JSON.stringify(profile));
 
       alert(' Profile completed!');
-      window.location.href = "studentLogin.html"; // Redirect to user login
+      window.location.href = "studentLogin.html";
+
     } catch (error) {
       console.error("Error saving profile:", error);
       alert('Failed to save profile. Try again.');
+      window.location.href = "studentOrProfessor.html";
     }
-  }
-
+    
+}
+localStorage.setItem("netID", netID);
 </script>
 
 </body>
