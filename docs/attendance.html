@@ -121,41 +121,55 @@
   }
 
   function markAttendance(classLocation) {
-    navigator.geolocation.getCurrentPosition(
-      position => {
-        const lat = position.coords.latitude;
-        const lon = position.coords.longitude;
-        const distance = getDistanceInMiles(lat, lon, classLocation.lat, classLocation.lon);
+  navigator.geolocation.getCurrentPosition(
+    position => {
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
+      
+      const classLat = parseFloat(classLocation.lat);
+      const classLon = parseFloat(classLocation.lon);
 
-        const status = distance <= maxDistanceMiles ? "present" : "absent";
+      const distance = getDistanceInMiles(lat, lon, classLat, classLon);
+      const distanceRounded = distance.toFixed(2); // round to 2 decimal places
 
-        const record = {
-          netID,
-          courseName,
-          status,
-          date: new Date().toLocaleDateString(),
-          studentLocation: { lat, lon }
-        };
+      const status = distance <= maxDistanceMiles ? "present" : "absent";
 
-        console.log("Attendance Record:", record);
+      const record = {
+        netID,
+        courseName,
+        status,
+        date: new Date().toLocaleDateString(),
+        studentLocation: { lat, lon }
+      };
 
-        db.ref(`AttendanceRecords/${netID}/${Date.now()}`).set(record);
+      console.log("Distance to class:", distanceRounded);
+      console.log("Attendance Record:", record);
 
-        loadingEl.style.display = "none";
-        resultEl.style.display = "block";
-        resultEl.textContent = `You are marked ${status.toUpperCase()} for ${courseName}.\nDistance: ${distance.toFixed(2)} miles`;
-        resultEl.className = "status " + (status === "present" ? "present" : "absent");
-      },
-      () => {
-        loadingEl.textContent = "Location access denied. Please enable location services.";
-      }
-    );
-  }
+      db.ref(`AttendanceRecords/${netID}/${Date.now()}`).set(record);
+
+      loadingEl.style.display = "none";
+      resultEl.style.display = "block";
+
+      resultEl.innerHTML = `
+        You are marked <strong>${status.toUpperCase()}</strong>.<br><br>
+        Your current location is <strong>Latitude: ${lat.toFixed(5)}, Longitude: ${lon.toFixed(5)}</strong>.<br><br>
+        You are <strong>${distanceRounded} miles</strong> away from <strong>${courseName}</strong>.
+      `;
+      resultEl.className = "status " + (status === "present" ? "present" : "absent");
+    },
+    error => {
+      console.error(error);
+      loadingEl.textContent = "Location access denied or error.";
+    },
+    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+  );
+}
+
 
   if (!courseName) {
     loadingEl.textContent = "No class selected. Please return to My Classes.";
   } else {
-    db.ref(`Classes/${courseName}`).once('value').then(snapshot => {
+    db.ref(`ClassLocations/${courseName}`).once('value').then(snapshot => {
       if (snapshot.exists()) {
         const classLocation = snapshot.val();
         console.log("Fetched class location:", classLocation);
@@ -172,4 +186,3 @@
 
 </body>
 </html>
-
