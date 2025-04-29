@@ -152,7 +152,8 @@
 
       resultEl.innerHTML = `
         You are marked <strong>${status.toUpperCase()}</strong>.<br><br>
-        Your current location is <strong>Latitude: ${lat.toFixed(5)}, Longitude: ${lon.toFixed(5)}</strong>.<br><br>
+             Your current location is <strong>Latitude: ${lat.toFixed(5)}, Longitude: ${lon.toFixed(5)}</strong>.<br><br>
+          Your class's current location is <strong>Latitude: ${classLat.toFixed(5)}, Longitude: ${classLon.toFixed(5)}</strong>.<br><br>
         You are <strong>${distanceRounded} miles</strong> away from <strong>${courseName}</strong>.
       `;
       resultEl.className = "status " + (status === "present" ? "present" : "absent");
