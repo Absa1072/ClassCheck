@@ -126,7 +126,7 @@
 
     <!-- Login Form -->
     <form id="loginForm" class="active">
-      <input type="email" id="loginEmail" placeholder="Rutgers Email" required />
+      <input type="text" id="netID" placeholder="Rutgers netID" required />
       <input type="password" id="loginPassword" placeholder="Password" required>
       <button type="submit" class="button">Login</button>
     </form>
@@ -145,42 +145,108 @@
     <button class="button" style="background:#ffd5ec; margin-top:15px;" onclick="toggleForms()">Switch to Sign Up</button>
   </div>
 
-  <script>
-    let isLogin = true;
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
 
-    function toggleForms() {
-      isLogin = !isLogin;
-      document.getElementById("loginForm").style.display = isLogin ? "block" : "none";
-      document.getElementById("signupForm").style.display = isLogin ? "none" : "block";
-      document.getElementById("loginMessage").style.display = isLogin ? "block" : "none";
-      document.getElementById("signupMessage").style.display = isLogin ? "none" : "block";
-      event.target.innerText = isLogin ? "Switch to Sign Up" : "Switch to Login";
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyC59MPssGSBhB4R4jDYjWv-D-hG1gl0hEA",
+    authDomain: "causal-cacao-457203-s1.firebaseapp.com",
+    databaseURL: "https://causal-cacao-457203-s1-default-rtdb.firebaseio.com",
+    projectId: "causal-cacao-457203-s1",
+    storageBucket: "causal-cacao-457203-s1.appspot.com",
+    messagingSenderId: "604345231228",
+    appId: "1:604345231228:web:c61b68eccff94d1d5826f9",
+    measurementId: "G-MJMBCWMNKP"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  let isLogin = true;
+
+  function toggleForms() {
+    isLogin = !isLogin;
+    document.getElementById("loginForm").style.display = isLogin ? "block" : "none";
+    document.getElementById("signupForm").style.display = isLogin ? "none" : "block";
+    document.getElementById("loginMessage").style.display = isLogin ? "block" : "none";
+    document.getElementById("signupMessage").style.display = isLogin ? "none" : "block";
+    event.target.innerText = isLogin ? "Switch to Sign Up" : "Switch to Login";
+  }
+
+  // handle login
+  document.getElementById("loginForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const netID = document.getElementById("netID").value.trim();
+    const password = document.getElementById("loginPassword").value.trim();
+
+    if (!netID || !password) {
+      alert("Please fill out all fields.");
+      return;
     }
 
-    // 🔐 Handle login
-    document.getElementById("loginForm").addEventListener("submit", function (e) {
-      e.preventDefault();
-      const email = document.getElementById("loginEmail").value.trim();
-      if (!email.endsWith("@rutgers.edu")) {
-        alert("Please use your Rutgers email.");
+    firebase.database().ref("Users/" + netID).once("value")
+    .then(snapshot => {
+      if (!snapshot.exists()) {
+        alert("User not found. Please sign up first.");
         return;
       }
-      const netID = email.split("@")[0];
-      localStorage.setItem("netID", netID);
-      window.location.href = "attendance.html";
-    });
 
-    // 🔐 Handle sign-up
-    document.getElementById("signupForm").addEventListener("submit", function (e) {
-      e.preventDefault();
-      const netID = document.getElementById("signupNetID").value.trim();
-      if (!netID) {
-        alert("Please enter your NetID.");
-        return;
+      const user = snapshot.val();
+
+      if (user.password === password) {
+        localStorage.setItem("netID", user.netID);
+        localStorage.setItem("name", user.firstName + " " + user.lastName);
+        localStorage.setItem("role", user.role);
+        localStorage.setItem("classes", JSON.stringify(user.classes));
+        window.location.href = "myClasses.html";
+      } else {
+        alert("Incorrect password.");
       }
-      localStorage.setItem("netID", netID);
-      window.location.href = "attendance.html";
+    })
+    .catch(error => {
+      console.error("Login error:", error);
+      alert("An error occurred during login.");
     });
-  </script>
+  });
+
+  // handle sign-up
+  document.getElementById("signupForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const firstName = document.getElementById("firstName").value.trim();
+    const lastName = document.getElementById("lastName").value.trim();
+    const netID = document.getElementById("signupNetID").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("signupPassword").value.trim();
+
+    if (!firstName || !lastName || !netID || !email || !password) {
+      alert("Please fill out all fields.");
+      return;
+    }
+
+    // read the netID from the database
+    firebase.database().ref("Users/" + netID).set({
+      firstName,
+      lastName,
+      netID,
+      email,
+      password,
+      role: "student",
+      classes: []
+    }).then(() => {
+      localStorage.setItem("netID", netID);
+      localStorage.setItem("name", firstName + " " + lastName);
+      localStorage.setItem("role", "student");
+      localStorage.setItem("classes", JSON.stringify([]));
+      window.location.href = "myClasses.html";
+    }).catch((error) => {
+      console.error("Error signing up:", error);
+      alert("Failed to create account.");
+    });
+  });
+</script>
+
 </body>
 </html>
