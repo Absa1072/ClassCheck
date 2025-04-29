@@ -68,6 +68,16 @@
         width: 100%;
       }
     }
+    .logout-link {
+      font-size: 0.9rem;
+      color: #777;
+      text-decoration: underline;
+      cursor: pointer;
+      margin-top: 40px;
+    }
+    .logout-link:hover {
+      color: #111111;
+    }
   </style>
 </head>
 <body>
@@ -77,6 +87,7 @@
     <p>Are you a Student or a Professor?</p>
     <button class="button" type="button" onclick="redirectToAuth('student')">I'm a Student</button>
     <button class="button" type="button" onclick="redirectToAuth('professor')">I'm a Professor</button>
+    <p class="logout-link" onclick="logout()">Stay Logged out</p>
   </div>
   
   <script>
