@@ -10,7 +10,7 @@ app.use('/docs', express.static(path.join(__dirname, 'docs')));
 const config = {
   authRequired: false,
   auth0Logout: true,
-  secret: 'YOUR_SECRET_HERE', // Replace with a strong secret or use env
+  secret: 'mPurOLtaLvYeN1LyD9pT07HQs7cIufFV0iejj48xUnMzjw26jy4ErCsromQY8oVQ',
   baseURL: 'http://localhost:3000',
   clientID: 'VJwDlz26K2Duzl8GpWxOTHPpAnxs5nPE',
   issuerBaseURL: 'https://dev-csb64xqu8rysh5zp.us.auth0.com'
