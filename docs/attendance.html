@@ -133,7 +133,11 @@
      const distanceRounded = (distance * 0.01).toFixed(2);
 
 
-      const status = distance <= maxDistanceMiles ? "present" : "absent";
+      if (distanceRounded <= maxDistanceMiles) {
+  status = "present";
+    } else {
+  status = "absent";
+}
 
       const record = {
         netID,
