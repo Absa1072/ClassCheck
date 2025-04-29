@@ -108,16 +108,19 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    const netID = localStorage.getItem("netID");
+    //const netID = localStorage.getItem("netID");
+    const email = localStorage.getItem("email");
 
-    if (!netID) {
+    //if (!netID) {
+    if (!email) {
       alert("Please login first.");
       window.location.href = "studentOrProfessor.html";
     }
 
     const classListDiv = document.getElementById("classList");
 
-    firebase.database().ref("Users/" + netID).once("value")
+    //firebase.database().ref("Users/" + netID).once("value")
+    firebase.database().ref("Users/" + email).once("value")
       .then(snapshot => {
         if (!snapshot.exists()) {
           document.getElementById("name").innerText = "Student";
@@ -128,7 +131,9 @@
         const student = snapshot.val();
         console.log("Loaded student:", student);
 
-        document.getElementById("name").innerText = student.firstName || netID;
+        //document.getElementById("name").innerText = student.firstName || netID;
+        document.getElementById("name").innerText = student.firstName || email;
+
 
         if (student.classes && Array.isArray(student.classes)) {
           student.classes.forEach(className => {
