@@ -37,7 +37,7 @@
       margin-bottom: 30px;
     }
 
-    .class-button {
+    .button {
       font-size: 16px;
       padding: 12px 24px;
       background: #ffd5ec;
@@ -56,117 +56,70 @@
       background: #ffe1f1;
       transform: scale(1.05);
     }
-
-    .logout-button {
-      position: absolute;
-      top: 20px;
-      right: 30px;
-      background: #ffd5ec;
-      color: #212020;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-weight: 600;
-      font-size: 14px;
-      cursor: pointer;
-      transition: background 0.3s ease, transform 0.2s ease;
-      box-shadow: 0px 5px 12px rgba(0, 0, 0, 0.05);
-    }
-
-    .logout-button:hover {
-      background: #ffe1f1;
-      transform: scale(1.05);
-    }
-
   </style>
 </head>
 <body>
 
   <div class="container">
-
-    <button id="logoutButton" class="logout-button"> Logout</button>
-
-   <h2>Welcome, <span id="firstName"></span> </h2>
-   
+    <h2>Welcome, <span id="name">...</span> </h2>
     <p>Here are your current classes:</p>
 
     <div id="classList">
-      <!-- Buttons will be added dynamically -->
+      
     </div>
   </div>
 
-  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
-  
-  <script>
-
-    const firebaseConfig = {
-    apiKey: "AIzaSyC59MPssGSBhB4R4jDYjWv-D-hG1gl0hEA",
-    authDomain: "causal-cacao-457203-s1.firebaseapp.com",
-    databaseURL: "https://causal-cacao-457203-s1-default-rtdb.firebaseio.com",
-    projectId: "causal-cacao-457203-s1"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+ 
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
     
-    fetch("/current-user")
-    .then(res => res.json())
-    .then(user => {
-      if (user && user.email) {
-        const netID = user.email.split("@")[0];
-        loadClasses(netID);
-      } else {
-        alert("You must be logged in to view your classes.");
-        window.location.href = "studentLogin.html";
-      }
-    })
-    .catch(err => {
-      console.error("Error getting current user:", err);
-      alert("Error verifying login. Redirecting...");
-      window.location.href = "studentOrProfessor.html";
-    });
-
-  function loadClasses(netID) {
-    const classListDiv = document.getElementById("classList");
-
-    firebase.database().ref("Users/" + netID).once("value")
-      .then(snapshot => {
+    const firebaseConfig = {
+        apiKey: "AIzaSyC59MPssGSBhB4R4jDYjWv-D-hG1gl0hEA",
+        authDomain: "causal-cacao-457203-s1.firebaseapp.com",
+        databaseURL: "https://causal-cacao-457203-s1-default-rtdb.firebaseio.com",
+        projectId: "causal-cacao-457203-s1",
+        storageBucket: "causal-cacao-457203-s1.appspot.com",
+        messagingSenderId: "604345231228",
+        appId: "1:604345231228:web:c61b68eccff94d1d5826f9",
+        measurementId: "G-MJMBCWMNKP"
+    };
+    
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    
+    const netID = localStorage.getItem("netID");
+    document.getElementById("name").textContent = netID;
+    
+    get(child(ref(db), `Users/${netID}`)).then(snapshot => {
+      if (snapshot.exists()) {
         const student = snapshot.val();
-        document.getElementById("firstName").textContent = student?.firstName || netID;
-
-        if (student?.classes?.length) {
-          student.classes.forEach(className => {
+        const listDiv = document.getElementById("classList");
+    
+        if (student.classes && Array.isArray(student.classes)) {
+          student.classes.forEach(classID => {
             const btn = document.createElement("button");
             btn.className = "button";
-            btn.textContent = className;
+            btn.textContent = `Mark attendance for ${classID}`;
+            
+            // ⬇️ When clicked, save class name and redirect
             btn.onclick = () => {
-              localStorage.setItem("selectedClass", className);
-              window.location.href = "markAttendance.html";
+              localStorage.setItem("selectedClass", classID); 
+              window.location.href = "attendance.html"; 
             };
-            classListDiv.appendChild(btn);
+    
+            listDiv.appendChild(btn);
           });
         } else {
-          classListDiv.innerText = "No classes found.";
+          listDiv.textContent = "You are not registered for any classes.";
         }
-      })
-      .catch(error => {
-        console.error("Failed to load student info:", error);
-        classListDiv.innerText = "Error loading classes.";
-      });
-  }
-  </script>
-  <script>
-  function logout() {
-    const returnTo = window.location.hostname.includes('localhost') 
-      ? "http://localhost:3001/"
-      : "https://absa1072.github.io/ClassCheck/";
-
-    window.location.href = `https://dev-csb64xqu8rysh5zp.us.auth0.com/v2/logout?client_id=VJwDlz26K2Duzl8GpWxOTHPpAnxs5nPE&returnTo=${encodeURIComponent(returnTo)}`;
-  }
-
-  document.getElementById("logoutButton").addEventListener("click", logout);
-</script>
-
+      } else {
+        document.getElementById("classList").textContent = "No profile found.";
+      }
+    }).catch(error => {
+      console.error(error);
+    });
+    </script>
+    
 </body>
 </html>
