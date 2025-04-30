@@ -1,6 +1,15 @@
 const express = require('express');
 const path = require('path');
 const { auth } = require('express-openid-connect');
+const admin = require('firebase-admin');
+const serviceAccount = require("./serviceAccountKey.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://causal-cacao-457203-s1-default-rtdb.firebaseio.com"
+});
+
+const db = admin.database();
 
 const app = express();
 
@@ -35,6 +44,27 @@ app.listen(3000, () => {
   console.log(`Server running at http://localhost:3000`);
 });
 
+const saveLocation = async (req, res) => {
+  try {
+    const {netID, lat, lon} = req.body;
+
+    if(!netID || !lat || !lon){
+      return res.status(400).json({error: "Missing fields"});
+    }
+    const locRef = db.ref(`AttendanceRecords/${netID}`);
+
+    await locRef.push({
+      lat,
+      lon,
+      timestamp: Date.now()
+    });
+
+    res.status(200).json({message: "Location saved!"});
+  } catch (error) {
+    console.log("Error saving users location");
+    res.status(500).json({error: "Error saving location"});
+  }
+};
 
 
 
