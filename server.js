@@ -13,6 +13,11 @@ const db = admin.database();
 
 const app = express();
 
+const cors = require('cors');
+app.use(cors({
+  origin: 'http://127.0.0.1:5501',
+}));
+
 app.use('/docs',express.static(path.join(__dirname, 'docs')));
 
 const config = {
@@ -66,6 +71,58 @@ const saveLocation = async (req, res) => {
   }
 };
 
+const db = admin.database();
+
+const saveLocation = async (req, res) => {
+  try {
+    const {netID, lat, lon} = req.body;
+
+    if(!netID || !lat || !lon){
+      return res.status(400).json({error: "Missing fields"});
+    }
+    const locRef = db.ref(`AttendanceRecords/${netID}`);
+
+    await locRef.push({
+      lat,
+      lon,
+      timestamp: Date.now()
+    });
+
+    res.status(200).json({message: "Location saved!"});
+  } catch (error) {
+    console.log("Error saving users location");
+    res.status(500).json({error: "Error saving location"});
+  }
+};
+
+app.get('user');
+
+app.use(express.json());
+
+// api POST into firebase database 
+app.post('/create-profile', async (req, res)=> {
+  const {netID, firstName, lastName, password, classes, role} = req.body;
+
+  if(!netID || !firstName || !lastName || !password || !classes || classes.length===0){
+    return res.status(400).json({error: 'Missing a required field. Please fill out all parts of the profile'});
+  }
+
+  try {
+    const userRef = db.ref(`Users/${netID}`);
+    await userRef.set({
+      firstName,
+      lastName,
+      password,
+      classes,
+      role
+    });
+    
+    res.status(200).json({message: 'Profile created successfully!'});
+  } catch (err) {
+    console.error('Error saving profile:', err);
+    res.status(500).json({error: 'Failed to save profile'});
+  }
+});
 
 
 
