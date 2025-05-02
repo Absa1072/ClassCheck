@@ -130,7 +130,7 @@
       const classLon = parseFloat(classLocation.lon);
 
       const distance = getDistanceInMiles(lat, lon, classLat, classLon);
-     const distanceRounded = (distance * 0.01).toFixed(2);
+     const distanceRounded = (distance).toFixed(2);
 
 
       if (distanceRounded <= maxDistanceMiles) {
