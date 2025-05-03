@@ -183,22 +183,32 @@
     role: "student"
   };
 
+    // api POST to firebase database + testing using API to see if the route works
   try {
-      await db.ref("Users/" + netID).set(profile);
-      console.log('Profile Saved:', profile);
-      localStorage.setItem('userProfile', JSON.stringify(profile));
+      const newProfile = await fetch('http://localhost:3000/create-profile', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(profile)
+      });
 
-      alert(' Profile completed!');
-      window.location.href = "studentLogin.html";
+      const result = await newProfile.json();
 
+      if(newProfile.ok){
+        console.log('Profile has been saved via API:', result);
+        localStorage.setItem('userProfile', JSON.stringify(profile));
+        alert('Profile completed via API');
+        window.location.href = "myClasses.html";
+      } else {
+        throw new Error(result.error || 'UNKOWN ERROR');
+      }
     } catch (error) {
-      console.error("Error saving profile:", error);
-      alert('Failed to save profile. Try again.');
-      window.location.href = "studentOrProfessor.html";
+      console.error('Error saving the profile:', error);
+      alert('Failed to save profile via API');
     }
-    
-}
-localStorage.setItem("netID", netID);
+  }
+
 </script>
 
 </body>
