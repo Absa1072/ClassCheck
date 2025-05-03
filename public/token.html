@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Redirecting...</title>
+</head>
+<body>
+  <p>Redirecting you to your dashboard...</p>
+  <script>
+    // Get the state parameter from the Auth0 redirect URL
+    const params = new URLSearchParams(window.location.search);
+    const role = params.get("state");
+
+    // Redirect based on role
+    if (role === "student") {
+      window.location.href = "studentLogin.html";
+    } else if (role === "professor") {
+      window.location.href = "professorLogin.html";
+    } else {
+      document.body.innerHTML = "<h2>Error: Role not specified.</h2>";
+    }
+  </script>
+</body>
+</html>

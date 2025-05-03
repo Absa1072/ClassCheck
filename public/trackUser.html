@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student location tracking</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+
+  <script defer src ="geolocation.js"></script>
+
+    <script 
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCZz6vK3hk_UluFowXy0lPscMP3yUnWAyU&callback=initMap"
+      defer
+      loading="async">
+     </script>
+
+  <style>
+    body {
+      font-family: 'Quicksand', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #fdf6f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: #ffffff;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      max-width: 500px;
+      width: 90%;
+      margin-top: 30px;
+    }
+
+    #map {
+      height: 60vh;
+      width: 90%;
+      margin: 20px auto;
+      border-radius: 12px;
+      box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.08);
+    }
+
+    .button {
+      font-size: 16px;
+      padding: 12px 24px;
+      background: #ffd5ec;
+      color: #333;
+      border: none;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+      margin: 10px;
+    }
+
+    .button:hover {
+      background: #ffe1f1;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <button class="button" id="button"> My Current Location</button>
+    <p id="status">Press the button to get your coordinates.</p>
+  </div>
+
+  <div id="map"></div>
+
+
+</body>
+</html> 

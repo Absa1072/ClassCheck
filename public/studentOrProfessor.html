@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Choose Role – ClassCheck</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Quicksand', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #fdf6f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: #ffffff;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      max-width: 500px;
+      width: 90%;
+    }
+
+    h2 {
+      color: #3b3b3b;
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+
+    p {
+      color: #666;
+      font-size: 1.1rem;
+      margin-bottom: 30px;
+    }
+
+    .button {
+      font-size: 16px;
+      padding: 12px 24px;
+      background: #fbcfe8;
+      color: #333;
+      border: none;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+      margin: 10px;
+      box-shadow: 0px 5px 12px rgba(0, 0, 0, 0.05);
+      width: 200px;
+    }
+
+    .button:hover {
+      background: #fde7f3;
+      transform: scale(1.05);
+    }
+
+    form {
+      margin-bottom: 15px;
+    }
+
+    @media (max-width: 480px) {
+      .button {
+        width: 100%;
+      }
+    }
+    .logout-link {
+      font-size: 0.9rem;
+      color: #777;
+      text-decoration: underline;
+      cursor: pointer;
+      margin-top: 40px;
+    }
+    .logout-link:hover {
+      color: #111111;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Welcome to ClassCheck</h2>
+    <p>Are you a Student or a Professor?</p>
+    <button class="button" type="button" onclick="redirectToAuth('student')">I'm a Student</button>
+    <button class="button" type="button" onclick="redirectToAuth('professor')">I'm a Professor</button>
+    <p class="logout-link" onclick="logout()">Stay Logged out</p>
+  </div>
+  
+  <script>
+function redirectToAuth(role) {
+  const authDomain = "https://dev-csb64xqu8rysh5zp.us.auth0.com/authorize";
+  const clientId = "VJwDlz26K2Duzl8GpWxOTHPpAnxs5nPE";
+  const audience = "https://apiclasscheck.com/api/signup";
+
+  const redirectUri = window.location.hostname.includes('localhost')
+    ? "http://localhost:3001/callback"
+    : "https://absa1072.github.io/ClassCheck/callback.html";  
+
+  const url = `${authDomain}?response_type=code` +
+              `&client_id=${clientId}` +
+              `&redirect_uri=${encodeURIComponent(redirectUri)}` +
+              `&scope=openid profile email` +
+              `&audience=${encodeURIComponent(audience)}` +
+              `&state=${role}`;
+
+  console.log("Redirecting to: ", url);
+
+  window.location.href = url; 
+}
+</script>
+
+<script>
+    function logout() {
+      const returnTo = window.location.hostname.includes('localhost') 
+        ? "http://localhost:3001/"
+        : "https://absa1072.github.io/ClassCheck/";
+
+      window.location.href = `https://dev-csb64xqu8rysh5zp.us.auth0.com/v2/logout?client_id=VJwDlz26K2Duzl8GpWxOTHPpAnxs5nPE&returnTo=${encodeURIComponent(returnTo)}`;
+    }
+  </script>
+
+</body>
+</html>

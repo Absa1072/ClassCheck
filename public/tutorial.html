@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to ClassCheck</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background-color: #fdf6f0;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background: rgb(255, 255, 255);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      max-width: 700px;
+      width: 90%;
+      text-align: center;
+    }
+    h1, h2 {
+      color: #3b3b3b;
+    }
+    p, ul {
+      color: #666;
+      font-size: 1.1rem;
+      text-align: left;
+      margin-bottom: 20px;
+    }
+    ul {
+      list-style-type: disc;
+      padding-left: 20px;
+    }
+    .button {
+      display: inline-block;
+      margin-top: 30px;
+      padding: 12px 24px;
+      font-size: 18px;
+      background: #bae6fd;
+      color: #333;
+      border: none;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+    .button:hover {
+      background: #d0efff;
+      transform: scale(1.05);
+    }
+    .logo {
+        width: 400px; 
+        height: auto;
+        margin-bottom: 20px;
+        }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <img src="CC_logo.png" alt="ClassCheck Logo" class="logo">
+    <h1>Welcome to ClassCheck</h1>
+    <p>ClassCheck makes tracking your classes and attendance simple, secure, and stress-free!</p>
+
+    <h2>How it Works</h2>
+    <ul>
+      <li>Students log in using their Rutgers email</li>
+      <li>Choose the class you're attending</li>
+      <li>Mark your attendance in just one click</li>
+      <li>Professors view attendance automatically</li>
+    </ul>
+
+    <h2>For Students</h2>
+    <p>Log in → View your classes → Mark attendance → You're done!</p>
+
+    <h2>For Professors</h2>
+    <p>Log in → Manage class lists → View students’ attendance records easily.</p>
+
+    <h2>Secure Login</h2>
+    <p>All accounts are created securely through Rutgers email authentication powered by Auth0.</p>
+
+    <a href="studentOrProfessor.html" class="button">🚀 Get Started</a>
+  </div>
+
+</body>
+</html>
