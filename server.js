@@ -42,10 +42,6 @@ app.get('/profile', requiresAuth(), (req, res) => {
   res.send(JSON.stringify(req.oidc.user));
 });
 
-app.listen(3000, () => {
-  console.log(`Server running at http://localhost:3000`);
-});
-
 const saveLocation = async (req, res) => {
   try {
     const {netID, lat, lon} = req.body;
@@ -99,5 +95,7 @@ app.post('/create-profile', async (req, res)=> {
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-
+app.listen(3000, () => {
+  console.log(`Server running at http://localhost:3000`);
+});
 
