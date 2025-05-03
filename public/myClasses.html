@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Classes – ClassCheck</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background-color: #fdf6f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: #fff;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      text-align: center;
+      max-width: 600px;
+      width: 90%;
+      position: relative;
+    }
+
+    h2 {
+      margin-bottom: 10px;
+      color: #3b3b3b;
+    }
+
+    p {
+      color: #666;
+      font-size: 1.1rem;
+      margin-bottom: 30px;
+    }
+
+    .button {
+      font-size: 16px;
+      padding: 10px 20px;
+      background: #ffd5ec;
+      color: #333;
+      border: none;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+      margin: 10px auto;
+      display: block;
+      max-width: 280px;
+    }
+
+    .button:hover {
+      background: #ffe1f1;
+      transform: scale(1.05);
+    }
+
+    .top-right-controls {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .top-button {
+      font-size: 14px;
+      padding: 8px 16px;
+      background: #ffd5ec;
+      color: #212020;
+      border: none;
+      border-radius: 20px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+      box-shadow: 0px 5px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .top-button:hover {
+      background: #ffe1f1;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="top-right-controls">
+      <form action="trackUser.html" method="GET">
+        <button type="submit" class="top-button">Track My Location</button>
+      </form>
+      <button id="logoutButton" class="top-button">Logout</button>
+    </div>
+
+    <h2>Welcome, <span id="name">...</span></h2>
+    <p>Here are your current classes:</p>
+
+    <div id="classList"></div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC59MPssGSBhB4R4jDYjWv-D-hG1gl0hEA",
+      authDomain: "causal-cacao-457203-s1.firebaseapp.com",
+      databaseURL: "https://causal-cacao-457203-s1-default-rtdb.firebaseio.com",
+      projectId: "causal-cacao-457203-s1",
+      storageBucket: "causal-cacao-457203-s1.appspot.com",
+      messagingSenderId: "604345231228",
+      appId: "1:604345231228:web:c61b68eccff94d1d5826f9",
+      measurementId: "G-MJMBCWMNKP"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const netID = localStorage.getItem("netID");
+    document.getElementById("name").textContent = netID;
+
+    get(child(ref(db), `Users/${netID}`)).then(snapshot => {
+      if (snapshot.exists()) {
+        const student = snapshot.val();
+        const listDiv = document.getElementById("classList");
+
+        if (student.classes && Array.isArray(student.classes)) {
+          student.classes.forEach(classID => {
+            const btn = document.createElement("button");
+            btn.className = "button";
+            btn.textContent = `Mark attendance for ${classID}`;
+            btn.onclick = () => {
+              localStorage.setItem("selectedClass", classID); 
+              window.location.href = "attendance.html"; 
+            };
+            listDiv.appendChild(btn);
+          });
+        } else {
+          listDiv.textContent = "You are not registered for any classes.";
+        }
+      } else {
+        document.getElementById("classList").textContent = "No profile found.";
+      }
+    }).catch(error => {
+      console.error(error);
+    });
+
+    function logout() {
+      const returnTo = window.location.hostname.includes('localhost') 
+        ? "http://localhost:3001/"
+        : "https://absa1072.github.io/ClassCheck/";
+
+      window.location.href = `https://dev-csb64xqu8rysh5zp.us.auth0.com/v2/logout?client_id=VJwDlz26K2Duzl8GpWxOTHPpAnxs5nPE&returnTo=${encodeURIComponent(returnTo)}`;
+    }
+
+    document.getElementById("logoutButton").addEventListener("click", logout);
+  </script>
+
+</body>
+</html>
