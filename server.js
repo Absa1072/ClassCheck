@@ -15,7 +15,7 @@ const app = express();
 
 app.use(express.json());
 
-app.use(express.static(path.join(__dirname, 'docs')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 const config = {
   authRequired: false,
