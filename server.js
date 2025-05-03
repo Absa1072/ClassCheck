@@ -13,11 +13,6 @@ const db = admin.database();
 
 const app = express();
 
-const cors = require('cors');
-app.use(cors({
-  origin: 'http://127.0.0.1:5501',
-}));
-
 app.use(express.json());
 
 app.use('/docs',express.static(path.join(__dirname, 'docs')));
