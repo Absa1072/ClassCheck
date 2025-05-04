@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Seed Firebase Attendance Data</title>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
+  <style>
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background-color: #fdf6f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    h2 {
+      color: #3b3b3b;
+    }
+
+    button {
+      padding: 12px 24px;
+      font-size: 16px;
+      background: #bae6fd;
+      border: none;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #d0efff;
+    }
+
+    #status {
+      margin-top: 20px;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Seed Test Attendance Data</h2>
+  <button onclick="seedData()">Insert Test Data</button>
+  <p id="status"></p>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyC59MPssGSBhB4R4jDYjWv-D-hG1gl0hEA",
+      authDomain: "causal-cacao-457203-s1.firebaseapp.com",
+      databaseURL: "https://causal-cacao-457203-s1-default-rtdb.firebaseio.com",
+      projectId: "causal-cacao-457203-s1",
+      storageBucket: "causal-cacao-457203-s1.appspot.com",
+      messagingSenderId: "604345231228",
+      appId: "1:604345231228:web:c61b68eccff94d1d5826f9",
+      measurementId: "G-MJMBCWMNKP"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function seedData() {
+      const classId = "14:332:452 Software Engineering";
+      const date = "2025-05-01";
+      const attendanceRef = db.ref(`Attendance/${classId}/${date}`);
+
+      const sampleData = {
+        netid1: {
+          studentName: "Lara Raj",
+          netID: "lraj1",
+          attendanceStatus: "Present",
+          checkinTime: "09:00 AM",
+          latitude: "40.5001",
+          longitude: "-74.4512"
+        },
+        netid2: {
+          studentName: "Yoon Chae",
+          netID: "ychae2",
+          attendanceStatus: "Absent",
+          checkinTime: "",
+          latitude: "",
+          longitude: ""
+        },
+        netid3: {
+          studentName: "Dani Ella",
+          netID: "della3",
+          attendanceStatus: "Present",
+          checkinTime: "09:03 AM",
+          latitude: "40.5004",
+          longitude: "-74.4523"
+        }
+      };
+
+      attendanceRef.set(sampleData)
+        .then(() => {
+          document.getElementById("status").textContent = "Test data inserted successfully!";
+        })
+        .catch(error => {
+          console.error("Error seeding data:", error);
+          document.getElementById("status").textContent = "Failed to insert data.";
+        });
+    }
+  </script>
+
+</body>
+</html>
