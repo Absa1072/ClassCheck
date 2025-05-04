@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const path = require('path');
 const { auth } = require('express-openid-connect');
 const admin = require('firebase-admin');
@@ -12,6 +13,12 @@ admin.initializeApp({
 const db = admin.database();
 
 const app = express();
+
+app.use(cors({
+  origin: 'https://absa1072.github.io', // allow frontend domain
+  methods: ['GET', 'POST'],
+  credentials: true
+}));
 
 app.use(express.json());
 
