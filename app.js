@@ -5,6 +5,7 @@ const { requiresAuth } = require('express-openid-connect');
 const indexRouter = require("./routes/index.js");
 const { auth } = require('express-openid-connect');
 require('dotenv').config()
+const admin = require("firebase-admin");
 
 const config = {
     authRequired: false,
@@ -46,6 +47,15 @@ app.get('/login', (req, res) => {
     const redirectTo = returnTo || 'index.html';
     res.oidc.login({ returnTo: redirectTo });
   });
+
+admin.initializeApp({
+  credential: admin.credential.cert({
+      projectId: process.env.FIREBASE_PROJECT_ID,
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+      privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n')
+  }),
+  databaseURL: process.env.FIREBASE_DATABASE_URL
+});
 
 app.listen(3001, () => {
     console.log(`Server running at http://localhost:3001`);
