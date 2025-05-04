@@ -4,8 +4,6 @@ const path = require('path');
 const { auth } = require('express-openid-connect');
 const admin = require('firebase-admin');
 
-const admin = require('firebase-admin');
-
 admin.initializeApp({
   credential: admin.credential.cert({
     projectId: process.env.FIREBASE_PROJECT_ID,
