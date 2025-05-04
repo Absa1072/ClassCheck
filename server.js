@@ -33,15 +33,14 @@ const config = {
   issuerBaseURL: 'https://dev-csb64xqu8rysh5zp.us.auth0.com'
 };
 
-// auth router attaches /login, /logout, and /callback routes to the baseURL
+// middleware
 app.use(auth(config));
 
 // req.isAuthenticated is provided from the auth router
 app.get('/', (req, res) => {
   res.send(req.oidc.isAuthenticated() ? 'Logged in' : 'Logged out');
 });
-//middleware
-app.use(auth(config));
+
 
 const { requiresAuth } = require('express-openid-connect');
 
