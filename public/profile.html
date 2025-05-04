@@ -185,7 +185,7 @@
 
     // api POST to firebase database + testing using API to see if the route works
   try {
-      const newProfile = await fetch('/create-profile', {
+      const newProfile = await fetch('https://classcheck-backend.onrender.com/create-profile', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
