@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -7,16 +8,15 @@ const admin = require('firebase-admin');
 const app = express();
 
 app.use(cors({
-  origin: 'https://absa1072.github.io',
+  origin: ['http://127.0.0.1:5500', 'http://localhost:5500', 'https://absa1072.github.io', 'https://classcheck.onrender.com'], 
   methods: ['GET', 'POST'],
-  allowedHeaders: ['Content-Type'],
+  credentials: true
 }));
+
 
 app.use(express.json());
 
 app.use(express.static(path.join(__dirname, 'public')));
-
-const db = admin.database();
 
 admin.initializeApp({
   credential: admin.credential.cert({
@@ -29,19 +29,20 @@ admin.initializeApp({
     auth_uri: process.env.FIREBASE_AUTH_URI,
     token_uri: process.env.FIREBASE_TOKEN_URI,
     auth_provider_x509_cert_url: process.env.FIREBASE_AUTH_PROVIDER_CERT_URL,
-    client_x509_cert_url: process.env.FIREBASE_CLIENT_CERT_URL
+    client_x509_cert_url: process.env.FIREBASE_CLIENT_CERT_URL,
   }),
-  databaseURL: `https://${process.env.FIREBASE_PROJECT_ID}-default-rtdb.firebaseio.com`
+  databaseURL: `https://${process.env.FIREBASE_PROJECT_ID}-default-rtdb.firebaseio.com`,
 });
 
+const db = admin.database();
 
 const config = {
   authRequired: false,
   auth0Logout: true,
-  secret: 'mPurOLtaLvYeN1LyD9pT07HQs7cIufFV0iejj48xUnMzjw26jy4ErCsromQY8oVQ',
-  baseURL: 'http://localhost:3000',
-  clientID: 'VJwDlz26K2Duzl8GpWxOTHPpAnxs5nPE',
-  issuerBaseURL: 'https://dev-csb64xqu8rysh5zp.us.auth0.com'
+  secret: process.env.AUTH0_SECRET,
+  baseURL: process.env.BASE_URL,
+  clientID: process.env.AUTH0_CLIENT_ID,
+  issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL,
 };
 
 // middleware
@@ -51,9 +52,6 @@ app.use(auth(config));
 app.get('/', (req, res) => {
   res.send(req.oidc.isAuthenticated() ? 'Logged in' : 'Logged out');
 });
-
-
-const { requiresAuth } = require('express-openid-connect');
 
 app.get('/profile', requiresAuth(), (req, res) => {
   res.send(JSON.stringify(req.oidc.user));
@@ -81,10 +79,6 @@ const saveLocation = async (req, res) => {
   }
 };
 
-app.get('user');
-
-app.use(express.json());
-
 // api POST into firebase database 
 app.post('/create-profile', async (req, res)=> {
   const {netID, firstName, lastName, password, classes, role} = req.body;
@@ -109,8 +103,6 @@ app.post('/create-profile', async (req, res)=> {
     res.status(500).json({error: 'Failed to save profile'});
   }
 });
-
-app.use(express.static(path.join(__dirname, 'public')));
 
 app.listen(3000, () => {
   console.log(`Server running at http://localhost:3000`);
