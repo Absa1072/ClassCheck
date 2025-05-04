@@ -30,6 +30,8 @@
     "express": "^5.1.0",
     "express-oauth2-jwt-bearer": "^1.6.1",
     "express-openid-connect": "^2.18.0",
-    "jsonwebtoken": "^9.0.2"
+    "firebase-admin": "^13.3.0",
+    "jsonwebtoken": "^9.0.2",
+    "node-fetch": "^3.3.2"
   }
 }
