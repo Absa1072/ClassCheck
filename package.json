@@ -5,6 +5,7 @@
   "main": "test_frontend.js",
   "directories": {
     "doc": "docs",
+    "public": "public",
     "test": "tests"
   },
   "scripts": {
