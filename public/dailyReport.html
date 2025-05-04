@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Daily Attendance Report</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background: #fdf6f0;
+      padding: 2rem;
+      position: relative;
+    }
+    h2 {
+      text-align: center;
+      color: #3b3b3b;
+    }
+    .input-row {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    select, input[type="date"], .button {
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      margin: 0 5px;
+    }
+    .button {
+      background: #bae6fd;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .button:hover {
+      background: #d0efff;
+    }
+    .print-button {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      background: #ffd5ec;
+      color: #212020;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+    .print-button:hover {
+      background: #ffe1f1;
+      transform: scale(1.05);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: white;
+    }
+    th, td {
+      padding: 12px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <button class="print-button" onclick="window.print()">Print / Download</button>
+
+  <h2>Daily Attendance Report</h2>
+
+  <div class="input-row">
+    <select id="classDropdown"><option>Loading classes...</option></select>
+    <input type="date" id="reportDate">
+    <button class="button" onclick="loadAttendance()">Generate</button>
+  </div>
+
+  <table id="attendanceTable" style="display: none;">
+    <thead>
+      <tr>
+        <th>Student Name</th>
+        <th>NetID</th>
+        <th>Status</th>
+        <th>Time</th>
+        <th>Latitude</th>
+        <th>Longitude</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyC59MPssGSBhB4R4jDYjWv-D-hG1gl0hEA",
+      authDomain: "causal-cacao-457203-s1.firebaseapp.com",
+      databaseURL: "https://causal-cacao-457203-s1-default-rtdb.firebaseio.com",
+      projectId: "causal-cacao-457203-s1",
+      storageBucket: "causal-cacao-457203-s1.appspot.com",
+      messagingSenderId: "604345231228",
+      appId: "1:604345231228:web:c61b68eccff94d1d5826f9"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const netID = localStorage.getItem("netID");
+    const dropdown = document.getElementById("classDropdown");
+
+    if (!netID) {
+      alert("Professor NetID not found. Please log in again.");
+      window.location.href = "index.html";
+    }
+
+    firebase.database().ref("Professors/" + netID).once("value")
+      .then(snapshot => {
+        if (snapshot.exists()) {
+          const profile = snapshot.val();
+          dropdown.innerHTML = "";
+          if (profile.classes && profile.classes.length > 0) {
+            profile.classes.forEach(cls => {
+              const option = document.createElement("option");
+              option.value = cls;
+              option.textContent = cls;
+              dropdown.appendChild(option);
+            });
+          } else {
+            dropdown.innerHTML = "<option>No classes found</option>";
+          }
+        } else {
+          alert("Professor profile not found.");
+          dropdown.innerHTML = "<option>Error loading classes</option>";
+        }
+      })
+      .catch(error => {
+        console.error("Error fetching professor data:", error);
+        dropdown.innerHTML = "<option>Failed to load classes</option>";
+      });
+
+    function loadAttendance() {
+      const classId = dropdown.value;
+      const date = document.getElementById("reportDate").value;
+      if (!classId || !date) {
+        alert("Please select a class and date.");
+        return;
+      }
+
+      const reportRef = db.ref(`Attendance/${classId}/${date}`);
+      const table = document.getElementById("attendanceTable");
+      const tbody = table.querySelector("tbody");
+      tbody.innerHTML = "";
+
+      reportRef.once("value").then(snapshot => {
+        if (snapshot.exists()) {
+          snapshot.forEach(entry => {
+            const r = entry.val();
+            const row = `<tr>
+              <td>${r.studentName || ''}</td>
+              <td>${r.netID}</td>
+              <td>${r.attendanceStatus}</td>
+              <td>${r.checkinTime || '—'}</td>
+              <td>${r.latitude || '—'}</td>
+              <td>${r.longitude || '—'}</td>
+            </tr>`;
+            tbody.insertAdjacentHTML('beforeend', row);
+          });
+          table.style.display = 'table';
+        } else {
+          alert("No records found for that class and date.");
+          table.style.display = 'none';
+        }
+      });
+    }
+  </script>
+</body>
+</html>
