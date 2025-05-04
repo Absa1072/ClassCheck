@@ -4,6 +4,20 @@ const path = require('path');
 const { auth } = require('express-openid-connect');
 const admin = require('firebase-admin');
 
+const app = express();
+
+app.use(cors({
+  origin: 'https://absa1072.github.io',
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type'],
+}));
+
+app.use(express.json());
+
+app.use(express.static(path.join(__dirname, 'public')));
+
+const db = admin.database();
+
 admin.initializeApp({
   credential: admin.credential.cert({
     type: process.env.FIREBASE_TYPE,
@@ -20,20 +34,6 @@ admin.initializeApp({
   databaseURL: `https://${process.env.FIREBASE_PROJECT_ID}-default-rtdb.firebaseio.com`
 });
 
-
-const db = admin.database();
-
-const app = express();
-
-app.use(cors({
-  origin: 'https://absa1072.github.io', // allow frontend domain
-  methods: ['GET', 'POST'],
-  credentials: true
-}));
-
-app.use(express.json());
-
-app.use(express.static(path.join(__dirname, 'public')));
 
 const config = {
   authRequired: false,
