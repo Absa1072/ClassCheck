@@ -77,7 +77,7 @@
   <div class="container">
     <h2>Send Absence Email</h2>
     <label for="email">Student Email:</label>
-    <input type="email" id="email" placeholder="Enter student email" />
+    <input type="email" id="email" placeholder="Enter email" />
     <button class="button" onclick="sendAbsenceEmail()">Send Email</button>
 
     <div id="statusMessage" class="message"></div>
@@ -86,7 +86,7 @@
   <script>
     async function sendAbsenceEmail() {
       const email = document.getElementById('email').value.trim();
-      const date = new Date().toISOString().split('T')[0];  
+      const date = new Date().toISOString().split('T')[0]; 
       const statusMessage = document.getElementById('statusMessage');
 
       if (!email) {
