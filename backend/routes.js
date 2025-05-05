@@ -8,7 +8,7 @@ router.post('/absenceinform', (req, res) => {
     const { netID, date } = req.body;
 
     if (!netID || !date) {
-        return res.status(400).json({ error: 'Missing netID or date parameter' });
+        return res.status(400).json({ error: 'Missing netID or date' });
     }
 
     const studentQuery = `
@@ -32,7 +32,7 @@ router.post('/absenceinform', (req, res) => {
         const studentEmail = student.email;
 
         const mailOptions = {
-            from: 'your-email@gmail.com',  // replace with your Gmail
+            from: 'classcheckmail@gmail.com',  
             to: studentEmail,
             subject: `Absence Notification for ${studentName}`,
             text: `STUDENT NAME: ${studentName} absent on ${date}. Please reach out to your teacher if you think this was a mistake.`
