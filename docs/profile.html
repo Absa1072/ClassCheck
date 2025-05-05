@@ -5,10 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Complete Profile – ClassCheck</title>
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
     body {
-      font-family: 'Quicksand', sans-serif;
+        font-family: 'Quicksand', sans-serif;
       background-color: #fdf6f0;
       margin: 0;
       padding: 0;
@@ -32,9 +31,10 @@
       color: #3b3b3b;
       font-size: 2rem;
       margin-bottom: 20px;
+   
     }
 
-    input[type="text"], input[type="email"] {
+    input[type="text"], input[type="password"] {
       padding: 12px;
       width: 90%;
       margin: 10px 0;
@@ -62,6 +62,11 @@
     .button:hover {
       background: #ffe1f1;
       transform: scale(1.05);
+    } .checkboxes-container {
+      margin-top: 20px;
+      text-align: left; 
+      display: inline-block;
+      width: 100%;
     }
 
     .class-item {
@@ -90,115 +95,121 @@
 
   <input type="text" id="firstName" placeholder="First Name" required /><br>
   <input type="text" id="lastName" placeholder="Last Name" required /><br>
-  <input type="text" id="netID" placeholder="NetID (from Auth0)" disabled /><br>
-  <input type="email" id="email" placeholder="Email (from Auth0)" disabled /><br>
-  <p>Your Role: <span id="role" style="font-weight:600;"></span></p>
+  <input type="text" id="netID" placeholder="NetID" required /><br>
+  <input type="password" id="password" placeholder="Password" required /><br>
+
+  <br><br>
 
   <label style="font-weight:600;">Select Your Classes:</label><br/><br/>
 
   <div id="classCheckboxes">
     <div class="class-item">
       <input type="checkbox" name="class" value="14:440:101 Introduction to Data-driven Design" />
-      <label>14:440:101 Introduction to Data-driven Design</label>
+      <label for="class1">14:440:101 Introduction to Data-driven Design</label>
     </div>
+
     <div class="class-item">
       <input type="checkbox" name="class" value="01:160:159 General Chemistry for Engineers" />
-      <label>01:160:159 General Chemistry for Engineers</label>
+      <label for="class2">01:160:159 General Chemistry for Engineers</label>
     </div>
+
     <div class="class-item">
       <input type="checkbox" name="class" value="01:160:171 Introduction to Experimentation" />
-      <label>01:160:171 Introduction to Experimentation</label>
+      <label for="class3">01:160:171 Introduction to Experimentation</label>
     </div>
-    <div class="class-item">
+
+   <div class="class-item">
       <input type="checkbox" name="class" value="14:332:452 Software Engineering" />
-      <label>14:332:452 Software Engineering</label>
+      <label for="class4">14:332:452 Software Engineering</label>
     </div>
+
     <div class="class-item">
       <input type="checkbox" name="class" value="01:640:151 Calculus" />
-      <label>01:640:151 Calculus</label>
+      <label for="class5">01:640:151 Calculus</label>
     </div>
+
     <div class="class-item">
       <input type="checkbox" name="class" value="01:750:123 Analytical Physics 1" />
-      <label>01:750:123 Analytical Physics 1</label>
+      <label for="class6">01:750:123 Analytical Physics 1</label>
     </div>
   </div>
+
+  <br>
 
   <button class="button" onclick="submitProfile()">Save Profile</button>
 </div>
 
-<script type="module">
-  import createAuth0Client from "https://cdn.jsdelivr.net/npm/@auth0/auth0-spa-js@2.0.3/+esm";
-
-  const auth0 = await createAuth0Client({
-    domain: "dev-csb64xqu8rysh5zp.us.auth0.com",
-    client_id: "VJwDlz26K2Duzl8GpWxOTHPpAnxs5nPE"
-  });
-
-  const isAuthenticated = await auth0.isAuthenticated();
-  if (!isAuthenticated) {
-    window.location.href = "index.html";
-  }
-
-  const user = await auth0.getUser();
-  const netID = user.nickname;
-  const email = user.email;
-  const role = user["https://classcheck.com/role"] || "student";
-
-  document.getElementById("email").value = email;
-  document.getElementById("netID").value = netID;
-  document.getElementById("role").textContent = role;
-
-  if (localStorage.getItem("userProfile")) {
-    window.location.href = "myClasses.html";
-  }
-</script>
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
 
 <script>
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyC59MPssGSBhB4R4jDYjWv-D-hG1gl0hEA",
+    authDomain: "causal-cacao-457203-s1.firebaseapp.com",
+    databaseURL: "https://causal-cacao-457203-s1-default-rtdb.firebaseio.com",
+    projectId: "causal-cacao-457203-s1",
+    storageBucket: "causal-cacao-457203-s1.appspot.com",
+    messagingSenderId: "604345231228",
+    appId: "1:604345231228:web:c61b68eccff94d1d5826f9",
+    measurementId: "G-MJMBCWMNKP"
+  };
+
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+  
   async function submitProfile() {
-    const firstName = document.getElementById('firstName').value.trim();
-    const lastName = document.getElementById('lastName').value.trim();
-    const netID = document.getElementById('netID').value.trim();
-    const email = document.getElementById('email').value.trim();
+  const firstName = document.getElementById('firstName').value.trim();
+  const lastName = document.getElementById('lastName').value.trim();
+  const netID = document.getElementById('netID').value.trim();
+  const password = document.getElementById('password').value.trim();
+  
+  // Get selected classes from checkboxes
+  const checkboxes = document.querySelectorAll('input[name="class"]:checked');
+  const selectedClasses = Array.from(checkboxes).map(cb => cb.value);
 
-    const checkboxes = document.querySelectorAll('input[name="class"]:checked');
-    const selectedClasses = Array.from(checkboxes).map(cb => cb.value);
+  if (!firstName || !lastName || !netID || !password || selectedClasses.length === 0) {
+    alert('Please complete all fields and select at least one class.');
+    return;
+  }
 
-    if (!firstName || !lastName || selectedClasses.length === 0) {
-      alert('Please complete all fields and select at least one class.');
-      return;
-    }
+  const profile = {
+    firstName,
+    lastName,
+    netID,
+    password,
+    classes: selectedClasses,
+    role: "student"
+  };
 
-    const profile = {
-      firstName,
-      lastName,
-      netID,
-      email,
-      classes: selectedClasses,
-      role: document.getElementById("role").textContent
-    };
-
-    try {
-      const newProfile = await fetch("https://classcheck.onrender.com/create-profile", {
+    // api POST to firebase database + testing using API to see if the route works
+  try {
+      const newProfile = await fetch("http://localhost:3000/create-profile", {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify(profile)
       });
 
       const result = await newProfile.json();
 
-      if (newProfile.ok) {
+      if(newProfile.ok){
         console.log('Profile has been saved via API:', result);
-        localStorage.setItem('userProfile', JSON.stringify(profile));
+       // localStorage.setItem('userProfile', JSON.stringify(profile));
+        localStorage.setItem('netID', netID);
         alert('Profile completed via API');
         window.location.href = "myClasses.html";
       } else {
-        throw new Error(result.error || 'UNKNOWN ERROR');
+        throw new Error(result.error || 'UNKOWN ERROR');
       }
     } catch (error) {
       console.error('Error saving the profile:', error);
       alert('Failed to save profile via API');
     }
   }
+
 </script>
 
 </body>
