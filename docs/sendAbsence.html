@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Absence Inform Overview – ClassCheck</title>
+  <title>Send Absence Email – ClassCheck</title>
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
@@ -23,14 +23,14 @@
       border-radius: 20px;
       box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.1);
       margin-top: 60px;
-      max-width: 900px;
+      max-width: 600px;
       width: 90%;
+      text-align: center;
     }
 
     h2 {
       color: #3b3b3b;
       font-size: 2rem;
-      text-align: center;
       margin-bottom: 20px;
     }
 
@@ -39,18 +39,16 @@
       margin-right: 10px;
     }
 
-    input, select {
+    input {
       padding: 10px;
-      border: 1px solid #ccc;
+      font-size: 16px;
       border-radius: 10px;
-      font-size: 1rem;
-      font-family: inherit;
-      background-color: #fefefe;
+      border: 1px solid #ccc;
+      width: 60%;
       margin-right: 10px;
-      margin-bottom: 15px;
     }
 
-    .button {
+    button {
       font-size: 16px;
       padding: 10px 20px;
       background: #bae6fd;
@@ -62,103 +60,55 @@
       transition: background 0.3s ease, transform 0.2s ease;
     }
 
-    .button:hover {
+    button:hover {
       background: #d0efff;
       transform: scale(1.05);
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 30px;
-    }
-
-    th, td {
-      border: 1px solid #ddd;
-      padding: 12px;
-      text-align: left;
-    }
-
-    th {
-      background-color: #f2f2f2;
+    .message {
+      margin-top: 20px;
+      font-size: 1.1rem;
+      font-weight: 500;
       color: #333;
-      font-weight: 600;
-    }
-
-    tr:nth-child(even) {
-      background-color: #fafafa;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h2>Send Absence Email</h2>
-    <div>
-      <label for="netID">Student NetID:</label>
-      <input type="text" id="netID" placeholder="Enter NetID" />
-      <button class="button" onclick="sendAbsenceEmail()">Send Email</button>
-    </div>
+    <label for="netID">Student NetID:</label>
+    <input type="text" id="netID" placeholder="Enter NetID" />
+    <button class="button" onclick="sendAbsenceEmail()">Send Email</button>
 
-    <table id="studentReportTable" style="display:none;">
-      <thead>
-        <tr>
-          <th>Class</th>
-          <th>Total Sessions</th>
-          <th>Sessions Attended</th>
-          <th>Attendance %</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+    <div id="statusMessage" class="message"></div>
   </div>
 
-  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyC59MPssGSBhB4R4jDYjWv-D-hG1gl0hEA",
-      authDomain: "causal-cacao-457203-s1.firebaseapp.com",
-      databaseURL: "https://causal-cacao-457203-s1-default-rtdb.firebaseio.com",
-      projectId: "causal-cacao-457203-s1",
-      storageBucket: "causal-cacao-457203-s1.appspot.com",
-      messagingSenderId: "604345231228",
-      appId: "1:604345231228:web:c61b68eccff94d1d5826f9",
-      measurementId: "G-MJMBCWMNKP"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
     async function sendAbsenceEmail() {
-      const netID = document.getElementById("netID").value.trim();
-      const table = document.getElementById("studentReportTable");
-      const tbody = table.querySelector("tbody");
-      tbody.innerHTML = "";
+      const netID = document.getElementById('netID').value.trim();
+      const date = new Date().toISOString().split('T')[0];  // Today’s date
+      const statusMessage = document.getElementById('statusMessage');
 
-      if (!netID) return alert("Please enter a valid NetID.");
+      if (!netID) {
+        statusMessage.textContent = 'Please enter a valid NetID.';
+        return;
+      }
 
       try {
-        const snapshot = await db.ref(`AttendanceRecords/${netID}`).get();
-        if (!snapshot.exists()) {
-          alert("No attendance data found for this student.");
-          table.style.display = "none";
-          return;
-        }
+        const response = await fetch('/api/absenceinform', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ netID, date })
+        });
 
-        const records = snapshot.val();
-        for (const classID in records) {
-          const classData = records[classID];
-          const total = classData.totalSessions || 0;
-          const attended = classData.sessionsAttended || 0;
-          const percent = total > 0 ? ((attended / total) * 100).toFixed(1) : '0';
-          const row = `<tr><td>${classID}</td><td>${total}</td><td>${attended}</td><td>${percent}%</td></tr>`;
-          tbody.insertAdjacentHTML("beforeend", row);
+        if (response.ok) {
+          statusMessage.textContent = 'Email sent successfully!';
+        } else {
+          statusMessage.textContent = 'Failed to send email.';
         }
-
-        table.style.display = "table";
-      } catch (err) {
-        console.error("Error fetching student report:", err);
-        alert("Something went wrong while fetching the report.");
+      } catch (error) {
+        console.error('Error sending email:', error);
+        statusMessage.textContent = 'Failed to send email.';
       }
     }
   </script>
