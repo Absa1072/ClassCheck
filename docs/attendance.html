@@ -140,7 +140,7 @@
           netID,
           courseName,
           status,
-          date: new Date().toLocaleDateString(),
+          date: new Date().toISOString().split('T')[0],
           time: new Date().toLocaleTimeString(),
           lat,
           lon
@@ -180,7 +180,7 @@
 
       }, error => {
         console.error(error);
-        loadingEl.textContent = "Location access denied.";
+        loadingEl.textContent = "Location access denied or error.";
       }, {
         enableHighAccuracy: true,
         timeout: 10000,
@@ -189,7 +189,7 @@
     }
 
     if (!courseName) {
-      loadingEl.textContent = "No class selected. Return to My Classes.";
+      loadingEl.textContent = "No class selected. Please return to My Classes.";
     } else {
       db.ref(`Classes/${courseName}`).once('value').then(snapshot => {
         if (snapshot.exists()) {
@@ -201,7 +201,7 @@
         }
       }).catch(error => {
         console.error(error);
-        loadingEl.textContent = "Error getting Class location.";
+        loadingEl.textContent = "Error fetching class location.";
       });
     }
 </script>
