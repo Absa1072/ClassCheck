@@ -136,7 +136,7 @@
       const result = await getProfile.json();
 
       if(getProfile.ok){
-        console.log('Profile has been recieved via API:', result);
+        console.log('Profile has been received via API:', result);
         localStorage.getItem('userProfile', JSON.stringify(profile));
         alert('Profile completed via API');
         window.location.href = "myClasses.html";
