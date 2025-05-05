@@ -141,15 +141,8 @@
   </style>
 </head>
 <body>
-
-
-  <div class="top-bar">
-    <button class="logout-button" onclick="logout()">Logout</button>
-  </div>
-
   <div class="container">
     <img src="CC_logo.png" alt="ClassCheck Logo" class="logo">
-    <!-- <svg class="checkmark" viewBox="0 0 24 24"> -->
       <path d="M5 13l4 4L19 7" />
     </svg>
     <h2>Welcome to ClassCheck</h2>
@@ -168,7 +161,7 @@
       </form>
     </div>
   </div>
-
+  
   <script>
     function redirectToAuth0Login() {
       const domain = "https://dev-csb64xqu8rysh5zp.us.auth0.com";
@@ -188,9 +181,6 @@
       window.location.href = loginUrl;
     }
 
-    function logout() {
-      window.location.href = "index.html";
-    }
   </script>
 </body>
 </html>
