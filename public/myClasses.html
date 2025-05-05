@@ -122,6 +122,32 @@
     const netID = localStorage.getItem("netID");
     document.getElementById("name").textContent = netID;
 
+    (async () => {
+      try {
+      const getProfile = fetch(`http://localhost:3000/get-profile?netID=${netID}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(profile)
+      });
+
+      const result = await getProfile.json();
+
+      if(getProfile.ok){
+        console.log('Profile has been recieved via API:', result);
+        localStorage.getItem('userProfile', JSON.stringify(profile));
+        alert('Profile completed via API');
+        window.location.href = "myClasses.html";
+      } else {
+        throw new Error(result.error || 'UNKOWN ERROR');
+      }
+    } catch (error) {
+      console.error('Error saving the profile:', error);
+      alert('Failed to save profile via API');
+    }
+    })
+
     get(child(ref(db), `Users/${netID}`)).then(snapshot => {
       if (snapshot.exists()) {
         const student = snapshot.val();
