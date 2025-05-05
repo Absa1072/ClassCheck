@@ -166,15 +166,30 @@
       classes: selectedClasses
     };
 
-    try {
-      await db.ref("Professors/" + netID).set(profile);
-      localStorage.setItem('professorProfile', JSON.stringify(profile));
-      localStorage.setItem('netID', netID);
-      alert('Profile completed!');
-      window.location.href = "professorDashboard.html";
+    // api POST to firebase database + testing using API to see if the route works
+  try {
+      const newProfile = await fetch("http://localhost:3000/create-teacher-profile", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(profile)
+      });
+
+      const result = await newProfile.json();
+
+      if(newProfile.ok){
+        console.log('Profile has been saved via API:', result);
+       // localStorage.setItem('userProfile', JSON.stringify(profile));
+        localStorage.setItem('netID', netID);
+        alert('Profile completed via API');
+        window.location.href = "professorDashboard.html";
+      } else {
+        throw new Error(result.error || 'UNKOWN ERROR');
+      }
     } catch (error) {
-      console.error("Error saving profile:", error);
-      alert('Failed to save profile. Try again.');
+      console.error('Error saving the profile:', error);
+      alert('Failed to save profile via API');
     }
   }
 </script>
