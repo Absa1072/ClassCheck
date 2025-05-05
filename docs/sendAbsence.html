@@ -96,7 +96,7 @@
     <div>
       <label for="netID">Student NetID:</label>
       <input type="text" id="netID" placeholder="Enter NetID" />
-      <button class="button" onclick="fetchStudentReport()">Send Email</button>
+      <button class="button" onclick="sendAbsenceEmail()">Send Email</button>
     </div>
 
     <table id="studentReportTable" style="display:none;">
@@ -129,7 +129,7 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    async function fetchStudentReport() {
+    async function sendAbsenceEmail() {
       const netID = document.getElementById("netID").value.trim();
       const table = document.getElementById("studentReportTable");
       const tbody = table.querySelector("tbody");
