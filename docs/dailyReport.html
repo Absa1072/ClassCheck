@@ -6,31 +6,83 @@
   <title>Daily Attendance Report</title>
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Quicksand', sans-serif; background: #fdf6f0; padding: 2rem; }
-    h2 { text-align: center; color: #3b3b3b; }
-    .input-row { text-align: center; margin-bottom: 20px; }
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background: #fdf6f0;
+      padding: 2rem;
+      position: relative;
+    }
+    h2 {
+      text-align: center;
+      color: #3b3b3b;
+    }
+    .input-row {
+      text-align: center;
+      margin-bottom: 20px;
+    }
     select, input[type="date"], .button {
-      padding: 10px; border-radius: 10px; font-size: 1rem;
-      border: 1px solid #ccc; margin: 0 5px;
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      margin: 0 5px;
     }
     .button {
-      background: #bae6fd; border: none; font-weight: 600; cursor: pointer;
+      background: #bae6fd;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
       transition: background 0.3s ease;
     }
-    .button:hover { background: #d0efff; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
-    th, td {
-      padding: 12px; border: 1px solid #ddd; text-align: left;
+    .button:hover {
+      background: #d0efff;
     }
-    th { background-color: #f2f2f2; font-weight: 600; }
+    .print-button {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      background: #ffd5ec;
+      color: #212020;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+    .print-button:hover {
+      background: #ffe1f1;
+      transform: scale(1.05);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: white;
+    }
+    th, td {
+      padding: 12px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+      font-weight: 600;
+    }
   </style>
 </head>
 <body>
+
+  <button class="button" onclick="location.href='report.html'">Report Dashbaord</button>
+
+  <button class="print-button" onclick="window.print()">Print / Download</button>
+  
+
   <h2>Daily Attendance Report</h2>
+
   <div class="input-row">
-    <select id="classDropdown">
-      <option disabled selected>Loading classes...</option>
-    </select>
+    <select id="classDropdown"><option>Loading classes...</option></select>
     <input type="date" id="reportDate">
     <button class="button" onclick="loadAttendance()">Generate</button>
   </div>
@@ -52,7 +104,6 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
   <script>
-    
     const firebaseConfig = {
       apiKey: "AIzaSyC59MPssGSBhB4R4jDYjWv-D-hG1gl0hEA",
       authDomain: "causal-cacao-457203-s1.firebaseapp.com",
@@ -60,82 +111,112 @@
       projectId: "causal-cacao-457203-s1",
       storageBucket: "causal-cacao-457203-s1.appspot.com",
       messagingSenderId: "604345231228",
-      appId: "1:604345231228:web:c61b68eccff94d1d5826f9",
-      measurementId: "G-MJMBCWMNKP"
+      appId: "1:604345231228:web:c61b68eccff94d1d5826f9"
     };
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
+
     const netID = localStorage.getItem("netID");
     const dropdown = document.getElementById("classDropdown");
 
-    function populateClasses() {
-      if (!netID) {
-        alert("No professor session found. Please log in.");
-        return window.location.href = "index.html";
-      }
+    (async () => {
+  if (!netID) {
+    alert("Professor NetID not found. Please log in again.");
+    window.location.href = "index.html";
+    return;
+  }
 
-      db.ref(`Professors/${netID}`).once("value")
-        .then(snapshot => {
-          if (snapshot.exists()) {
-            const classes = snapshot.val().classes || [];
-            dropdown.innerHTML = '<option disabled selected>Select Class</option>';
-            classes.forEach(cls => {
-              const option = document.createElement("option");
-              option.value = cls;
-              option.textContent = cls;
-              dropdown.appendChild(option);
-            });
-          } else {
-            alert("No professor data found.");
-          }
-        })
-        .catch(err => {
-          console.error("Error loading classes:", err);
-          alert("Failed to fetch class list.");
-        });
-    }
+  try {
+    const response = await fetch(`http://localhost:3000/get-prof?netID=${netID}`);
+    const result = await response.json();
 
-    populateClasses();
-    
-    function loadAttendance() {
-      const classId = dropdown.value;
-      const date = document.getElementById("reportDate").value;
-      const table = document.getElementById("attendanceTable");
-      const tbody = table.querySelector("tbody");
+    if (!response.ok) throw new Error(result.error || "Failed to get professor profile");
 
-      if (!classId || !date) {
-        alert("Please select both a class and a date.");
-        return;
-      }
+    dropdown.innerHTML = "";
 
-      const refPath = `Attendance/${classId}/${date}`;
-      db.ref(refPath).once("value").then(snapshot => {
-        tbody.innerHTML = "";
-
-        if (snapshot.exists()) {
-          snapshot.forEach(entry => {
-            const r = entry.val();
-            const row = `<tr>
-              <td>${r.studentName || ''}</td>
-              <td>${r.netID}</td>
-              <td>${r.attendanceStatus}</td>
-              <td>${r.checkinTime || '—'}</td>
-              <td>${r.latitude || '—'}</td>
-              <td>${r.longitude || '—'}</td>
-            </tr>`;
-            tbody.insertAdjacentHTML("beforeend", row);
-          });
-          table.style.display = "table";
-        } else {
-          alert("No attendance found for this class and date.");
-          table.style.display = "none";
-        }
-      }).catch(error => {
-        console.error(error);
-        alert("Failed to load attendance.");
+    if (result.classes && result.classes.length > 0) {
+      result.classes.forEach(cls => {
+        const option = document.createElement("option");
+        option.value = cls;
+        option.textContent = cls;
+        dropdown.appendChild(option);
       });
+    } else {
+      dropdown.innerHTML = "<option>No classes found</option>";
     }
+
+  } catch (error) {
+    console.error("Error fetching professor classes:", error);
+    dropdown.innerHTML = "<option>Error loading classes</option>";
+  }
+})();
+
+function loadAttendance() {
+  const classId = document.getElementById("classDropdown").value;
+  const selectedDate = document.getElementById("reportDate").value;
+  const table = document.getElementById("attendanceTable");
+  const tbody = table.querySelector("tbody");
+  tbody.innerHTML = "";
+
+  if (!classId || !selectedDate) {
+    alert("Please select a class and date.");
+    return;
+  }
+
+  const reportRef = db.ref("AttendanceRecords");
+
+  reportRef.once("value").then(snapshot => {
+    if (!snapshot.exists()) {
+      alert("No attendance data found.");
+      table.style.display = "none";
+      return;
+    }
+
+    let found = false;
+
+    snapshot.forEach(userSnap => {
+      const netID = userSnap.key;
+
+      userSnap.forEach(recordSnap => {
+        const record = recordSnap.val();
+
+        if (record.courseName === classId && record.date === selectedDate) {
+          found = true;
+
+          const lat = record.lat ?? "—";
+          const lon = record.lon ?? "—";
+          const time = record.time ?? "—";
+          const status = record.status ?? "—";
+          const studentName = record.studentName || netID;
+
+          const row = `<tr>
+            <td>${studentName}</td>
+            <td>${netID}</td>
+            <td>${status}</td>
+            <td>${time}</td>
+            <td>${lat}</td>
+            <td>${lon}</td>
+          </tr>`;
+
+          tbody.insertAdjacentHTML("beforeend", row);
+        }
+      });
+    });
+
+    if (found) {
+      table.style.display = "table";
+    } else {
+      alert("No attendance records found for that class and date.");
+      table.style.display = "none";
+    }
+  }).catch(error => {
+    console.error("Error loading attendance:", error);
+    alert("Failed to load attendance.");
+  });
+}
+
+
   </script>
 </body>
 </html>
