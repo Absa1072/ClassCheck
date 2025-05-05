@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Review Attendance Exceptions – ClassCheck</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background-color: #fdf6f0;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: #ffffff;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      margin-top: 60px;
+      max-width: 1000px;
+      width: 95%;
+    }
+
+    h2 {
+      color: #3b3b3b;
+      text-align: center;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 30px;
+      background: white;
+    }
+
+    th, td {
+      padding: 12px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f2f2f2;
+      font-weight: 600;
+    }
+
+    tr:nth-child(even) {
+      background-color: #fafafa;
+    }
+
+    .action-btn {
+      padding: 6px 12px;
+      margin: 2px;
+      border-radius: 8px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .approve {
+      background-color: #c3f4d1;
+      color: #1c662f;
+    }
+
+    .reject {
+      background-color: #ffd3d3;
+      color: #891111;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Review Attendance Exceptions</h2>
+    <table id="exceptionTable" style="display: none;">
+      <thead>
+        <tr>
+          <th>Student Name</th>
+          <th>Student NetID</th>
+          <th>Class</th>
+          <th>Date</th>
+          <th>Reason</th>
+          <th>Additional Notes</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <p id="statusMessage" style="text-align: center; margin-top: 20px;"></p>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyC59MPssGSBhB4R4jDYjWv-D-hG1gl0hEA",
+      authDomain: "causal-cacao-457203-s1.firebaseapp.com",
+      databaseURL: "https://causal-cacao-457203-s1-default-rtdb.firebaseio.com",
+      projectId: "causal-cacao-457203-s1",
+      storageBucket: "causal-cacao-457203-s1.appspot.com",
+      messagingSenderId: "604345231228",
+      appId: "1:604345231228:web:c61b68eccff94d1d5826f9"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const table = document.getElementById("exceptionTable");
+    const tbody = table.querySelector("tbody");
+    const statusMessage = document.getElementById("statusMessage");
+
+    const netID = localStorage.getItem("netID");
+
+    async function fetchExceptions() {
+      if (!netID) {
+        statusMessage.textContent = "Professor NetID not found. Please log in again.";
+        return;
+      }
+
+      try {
+        const profSnapshot = await db.ref("Professors/" + netID).get();
+        if (!profSnapshot.exists()) {
+          statusMessage.textContent = "No professor profile found.";
+          return;
+        }
+
+        const professorData = profSnapshot.val();
+        const professorNetID = professorData.netID;
+
+        const exceptionSnapshot = await db.ref("AttendanceExceptions").get();
+        if (!exceptionSnapshot.exists()) {
+          statusMessage.textContent = "No exception requests found.";
+          return;
+        }
+
+        let found = false;
+        exceptionSnapshot.forEach(child => {
+          const data = child.val();
+          const exceptionKey = child.key;
+          if (data.professorNetID === professorNetID) {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+              <td>${data.studentName || ''}</td>
+              <td>${data.studentNetID || ''}</td>
+              <td>${data.classID || ''}</td>
+              <td>${data.date || ''}</td>
+              <td>${data.reason || ''}</td>
+              <td>${data.additionalNotes || ''}</td>
+              <td id="status-${exceptionKey}">${data.status || 'Pending'}</td>
+              <td>
+                <button class="action-btn approve" onclick="updateStatus('${exceptionKey}', 'Approved')">Approve</button>
+                <button class="action-btn reject" onclick="updateStatus('${exceptionKey}', 'Rejected')">Reject</button>
+              </td>
+            `;
+            tbody.appendChild(row);
+            found = true;
+          }
+        });
+
+        if (found) {
+          table.style.display = "table";
+        } else {
+          statusMessage.textContent = "No exception requests submitted to you yet.";
+        }
+
+      } catch (err) {
+        console.error("Error loading exceptions:", err);
+        statusMessage.textContent = "Error fetching exception requests.";
+      }
+    }
+
+    function updateStatus(key, newStatus) {
+      const statusRef = db.ref("AttendanceExceptions/" + key + "/status");
+      statusRef.set(newStatus)
+        .then(() => {
+          document.getElementById(`status-${key}`).textContent = newStatus;
+        })
+        .catch(error => {
+          console.error("Failed to update status:", error);
+          alert("Error updating status. Please try again.");
+        });
+    }
+
+    fetchExceptions();
+  </script>
+</body>
+</html>
