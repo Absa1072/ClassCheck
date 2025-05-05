@@ -99,6 +99,7 @@
     <p>Here are your current classes:</p>
 
     <div id="classList"></div>
+    <button id="exceptionButton" class="button">Request Attendance Exception</button>
   </div>
 
   <script type="module">
@@ -183,6 +184,10 @@
     }
 
     document.getElementById("logoutButton").addEventListener("click", logout);
+
+    document.getElementById("exceptionButton").addEventListener("click", () => {
+      window.location.href = "AttendanceException.html";
+    });
   </script>
 
 </body>
