@@ -1,15 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../database/db'); 
-const { transporter } = require('./server');
 const nodemailer = require('nodemailer');
-// UC3: Absence Inform 
 
+// UC3: Absence Inform 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
         user: 'ClassCheckMail@gmail.com',
-        pass: 'qpncibsiedepdwke'
+        pass: 'qpncibsiedepdwke'  
     }
 });
 
@@ -37,11 +36,7 @@ router.post('/api/absenceinform', async (req, res) => {
     }
 });
 
-module.exports = router;
-
-
-
-// UC2: Create Attendance Reports
+// UC2: Create Attendance Reports 
 router.get('/attendance/reports', (req, res) => {
   const { classId, date } = req.query;
 
