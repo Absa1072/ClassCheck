@@ -187,7 +187,11 @@
     }
 
     function logout() {
-      window.location.href = "studentLogin.html"; // Redirects to login page
+      const returnTo = window.location.hostname.includes('localhost') 
+        ? "http://localhost:3001/"
+        : "https://absa1072.github.io/ClassCheck/";
+
+      window.location.href = `https://dev-csb64xqu8rysh5zp.us.auth0.com/v2/logout?client_id=VJwDlz26K2Duzl8GpWxOTHPpAnxs5nPE&returnTo=${encodeURIComponent(returnTo)}`;
     }
   </script>
 </body>
