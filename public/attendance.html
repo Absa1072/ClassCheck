@@ -147,10 +147,32 @@
         studentLocation: { lat, lon }
       };
 
+       try {
+          const response = await fetch("http://localhost:3000/save-location", {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(record)
+          });
+
+          const result = await response.json();
+
+          if (response.ok) {
+            console.log('Attendance saved via API:', result);
+            alert('Attendance saved via API');
+          } else {
+            throw new Error(result.error || 'Unknown error');
+          }
+        } catch (error) {
+          console.error('Error saving attendance:', error);
+          alert('Failed to save attendance via API');
+        }
+
       console.log("Distance to class:", distanceRounded);
       console.log("Attendance Record:", record);
 
-      db.ref(`AttendanceRecords/${netID}/${Date.now()}`).set(record);
+     //db.ref(`AttendanceRecords/${netID}/${Date.now()}`).set(record);
 
       loadingEl.style.display = "none";
       resultEl.style.display = "block";
