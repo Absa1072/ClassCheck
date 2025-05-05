@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <title>Processing Login...</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </head>
 <body style="font-family: Arial, sans-serif; text-align: center; margin-top: 100px;">
   <h2>Processing your login... 🔄</h2>
@@ -12,13 +15,26 @@
   
     const params = new URLSearchParams(window.location.search);
     const code = params.get('code');
-    const role = params.get('state');  
+    const role = params.get('state');
+    const error = params.get('error');
+    const errorDescription = params.get('error_description');
+
 
     console.log("Received code:", code);
     console.log("Received role:", role);
 
-    if (!code || !role) {
-      document.body.innerHTML = "<h2>⚠️ Error during login. Please try again.</h2>";
+    if (error || !code || !role) {
+      //document.body.innerHTML = "<h2>⚠️ Error during login. Please try again.</h2>";
+      Swal.fire({
+        icon: 'error',
+        title: 'Login Failed',
+        text: decodeURIComponent(errorDescription || 'An unknown error occurred.'),
+        confirmButtonText: 'Return to Home',
+        confirmButtonColor: '#f472b6'
+      }).then(() => {
+        window.location.href = 'index.html';
+});
+
     } else {
       
       localStorage.setItem("role", role);
