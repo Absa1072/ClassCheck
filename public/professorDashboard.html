@@ -91,7 +91,6 @@
   <p>Here are the classes you're teaching:</p>
 
   <div id="classList">
-    
   </div>
 
 </div>
@@ -159,6 +158,19 @@
       };
       classListDiv.appendChild(btn);
     });
+
+   
+    const exceptionBtn = document.createElement("button");
+    exceptionBtn.className = "button";
+    exceptionBtn.textContent = "Review Attendance Exceptions";
+    exceptionBtn.style.background = "#fda4af";  
+    exceptionBtn.style.color = "#3b3b3b";
+    exceptionBtn.style.fontWeight = "700";
+    exceptionBtn.style.boxShadow = "0 4px 12px rgba(255, 105, 135, 0.2)";
+    exceptionBtn.onclick = () => {
+      window.location.href = "reviewExceptions.html";
+    };
+    classListDiv.appendChild(exceptionBtn);
   }
 
   function logout() {
