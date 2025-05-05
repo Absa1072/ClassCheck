@@ -5,8 +5,16 @@ const path = require('path');
 const { auth, requiresAuth } = require('express-openid-connect');
 const admin = require('firebase-admin');
 const serviceAccount = require("./serviceAccountKey.json");
-
 const app = express();
+const nodemailer = require('nodemailer');
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'ClassCheckMail@gmail.com',
+        pass: 'ClassChecker123!'
+    }
+});
 
 app.use(cors({
   origin: ['http://127.0.0.1:5500', 'http://localhost:5500', 'https://absa1072.github.io', 'http://localhost:3000'], 
