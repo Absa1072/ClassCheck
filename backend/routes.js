@@ -2,52 +2,42 @@ const express = require('express');
 const router = express.Router();
 const db = require('../database/db'); 
 const { transporter } = require('./server');
-
+const nodemailer = require('nodemailer');
 // UC3: Absence Inform 
-router.post('/absenceinform', (req, res) => {
-    const { netID, date } = req.body;
 
-    if (!netID || !date) {
-        return res.status(400).json({ error: 'Missing netID or date' });
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'ClassCheckMail@gmail.com',
+        pass: 'ClassChecker123!'
+    }
+});
+
+router.post('/api/absenceinform', async (req, res) => {
+    const { email, date } = req.body;
+
+    if (!email || !date) {
+        return res.status(400).json({ error: 'Missing email or date' });
     }
 
-    const studentQuery = `
-        SELECT name, email
-        FROM UserProfile
-        WHERE net_id = ?
-    `;
+    const mailOptions = {
+        from: 'ClassCheckMail@gmail.com',
+        to: email,
+        subject: 'ClassCheck Absence Notification',
+        text: `STUDENT EMAIL: ${email} was absent on ${date}. Please reach out to your teacher if you think this was a mistake.`
+    };
 
-    db.query(studentQuery, [netID], async (err, results) => {
-        if (err) {
-            console.error('Database query error:', err);
-            return res.status(500).json({ error: 'Failed to fetch student details' });
-        }
-
-        if (results.length === 0) {
-            return res.status(404).json({ error: 'Student not found for given netID' });
-        }
-
-        const student = results[0];
-        const studentName = student.name;
-        const studentEmail = student.email;
-
-        const mailOptions = {
-            from: 'classcheckmail@gmail.com',  
-            to: studentEmail,
-            subject: `Absence Notification for ${studentName}`,
-            text: `STUDENT NAME: ${studentName} absent on ${date}. Please reach out to your teacher if you think this was a mistake.`
-        };
-
-        try {
-            const info = await transporter.sendMail(mailOptions);
-            console.log('Email sent: ' + info.response);
-            res.status(200).json({ message: 'Absence email sent successfully' });
-        } catch (error) {
-            console.error('Error sending absence email:', error);
-            res.status(500).json({ error: 'Failed to send absence email' });
-        }
-    });
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log(`Absence email sent to ${email}`);
+        res.status(200).json({ message: 'Absence email sent successfully' });
+    } catch (error) {
+        console.error('Error sending absence email:', error);
+        res.status(500).json({ error: 'Failed to send absence email' });
+    }
 });
+
+module.exports = router;
 
 
 
