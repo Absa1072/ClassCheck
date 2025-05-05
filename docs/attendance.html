@@ -77,6 +77,9 @@
     <p id="loading">Checking your location...</p>
     <div id="result" class="status" style="display:none;"></div>
     <button class="button" onclick="location.reload()">Retry</button>
+    <a href="myClasses.html" method="GET">
+      <button type="button" class="button">My Dashboard</button>
+    </form>
   </div>
 
  
@@ -85,109 +88,122 @@
 
 <script>
   const firebaseConfig = {
-    apiKey: "AIzaSyC59MPssGSBhB4R4jDYjWv-D-hG1gl0hEA",
-    authDomain: "causal-cacao-457203-s1.firebaseapp.com",
-    databaseURL: "https://causal-cacao-457203-s1-default-rtdb.firebaseio.com",
-    projectId: "causal-cacao-457203-s1",
-    storageBucket: "causal-cacao-457203-s1.appspot.com",
-    messagingSenderId: "604345231228",
-    appId: "1:604345231228:web:c61b68eccff94d1d5826f9",
-    measurementId: "G-MJMBCWMNKP"
-  };
+      apiKey: "AIzaSyC59MPssGSBhB4R4jDYjWv-D-hG1gl0hEA",
+      authDomain: "causal-cacao-457203-s1.firebaseapp.com",
+      databaseURL: "https://causal-cacao-457203-s1-default-rtdb.firebaseio.com",
+      projectId: "causal-cacao-457203-s1",
+      storageBucket: "causal-cacao-457203-s1.appspot.com",
+      messagingSenderId: "604345231228",
+      appId: "1:604345231228:web:c61b68eccff94d1d5826f9",
+      measurementId: "G-MJMBCWMNKP"
+    };
 
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-  const netID = localStorage.getItem("netID");
-  const courseName = localStorage.getItem("selectedClass"); 
-  const maxDistanceMiles = 0.01;
+    const netID = localStorage.getItem("netID");
+    const courseName = localStorage.getItem("selectedClass");
+    const maxDistanceMiles = 0.01;
 
-  const loadingEl = document.getElementById("loading");
-  const resultEl = document.getElementById("result");
+    const loadingEl = document.getElementById("loading");
+    const resultEl = document.getElementById("result");
 
-  function toRadians(degrees) {
-    return degrees * (Math.PI / 180);
-  }
+    function toRadians(degrees) {
+      return degrees * (Math.PI / 180);
+    }
 
-  function getDistanceInMiles(lat1, lon1, lat2, lon2) {
-    const R = 3958.8; // miles
-    const dLat = toRadians(lat2 - lat1);
-    const dLon = toRadians(lon2 - lon1);
-    const a = Math.sin(dLat / 2) ** 2 +
-              Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) *
-              Math.sin(dLon / 2) ** 2;
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
-  }
+    function getDistanceInMiles(lat1, lon1, lat2, lon2) {
+      const R = 3958.8;
+      const dLat = toRadians(lat2 - lat1);
+      const dLon = toRadians(lon2 - lon1);
+      const a = Math.sin(dLat / 2) ** 2 +
+                Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) *
+                Math.sin(dLon / 2) ** 2;
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c;
+    }
 
-  function markAttendance(classLocation) {
-  navigator.geolocation.getCurrentPosition(
-    position => {
-      const lat = position.coords.latitude;
-      const lon = position.coords.longitude;
-      
-      const classLat = parseFloat(classLocation.lat);
-      const classLon = parseFloat(classLocation.lon);
+    async function markAttendance(classLocation) {
+      navigator.geolocation.getCurrentPosition(async position => {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
 
-      const distance = getDistanceInMiles(lat, lon, classLat, classLon);
-     const distanceRounded = (distance).toFixed(2);
+        const classLat = parseFloat(classLocation.lat);
+        const classLon = parseFloat(classLocation.lon);
 
+        const distance = getDistanceInMiles(lat, lon, classLat, classLon);
+        const distanceRounded = distance.toFixed(2);
 
-      if (distanceRounded <= maxDistanceMiles) {
-  status = "present";
+        const status = distanceRounded <= maxDistanceMiles ? "present" : "absent";
+
+        const record = {
+          netID,
+          courseName,
+          status,
+          date: new Date().toLocaleDateString(),
+          time: new Date().toLocaleTimeString(),
+          lat,
+          lon
+        };
+
+        try {
+          const response = await fetch("http://localhost:3000/save-location", {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(record)
+          });
+
+          const result = await response.json();
+
+          if (response.ok) {
+            console.log('Attendance saved via API:', result);
+            alert('Attendance saved via API');
+          } else {
+            throw new Error(result.error || 'Unknown error');
+          }
+        } catch (error) {
+          console.error('Error saving attendance:', error);
+          alert('Failed to save attendance via API');
+        }
+
+        loadingEl.style.display = "none";
+        resultEl.style.display = "block";
+        resultEl.innerHTML = `
+          You are marked <strong>${status.toUpperCase()}</strong>.<br><br>
+          Your current location is <strong>Latitude: ${lat.toFixed(5)}, Longitude: ${lon.toFixed(5)}</strong>.<br><br>
+          Your class's location is <strong>Latitude: ${classLat.toFixed(5)}, Longitude: ${classLon.toFixed(5)}</strong>.<br><br>
+          You are <strong>${distanceRounded} miles</strong> from <strong>${courseName}</strong>.
+        `;
+        resultEl.className = "status " + (status === "present" ? "present" : "absent");
+
+      }, error => {
+        console.error(error);
+        loadingEl.textContent = "Location access denied or error.";
+      }, {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+      });
+    }
+
+    if (!courseName) {
+      loadingEl.textContent = "No class selected. Please return to My Classes.";
     } else {
-  status = "absent";
-}
-
-      const record = {
-        netID,
-        courseName,
-        status,
-        date: new Date().toLocaleDateString(),
-        studentLocation: { lat, lon }
-      };
-
-      console.log("Distance to class:", distanceRounded);
-      console.log("Attendance Record:", record);
-
-      db.ref(`AttendanceRecords/${netID}/${Date.now()}`).set(record);
-
-      loadingEl.style.display = "none";
-      resultEl.style.display = "block";
-
-      resultEl.innerHTML = `
-        You are marked <strong>${status.toUpperCase()}</strong>.<br><br>
-             Your current location is <strong>Latitude: ${lat.toFixed(5)}, Longitude: ${lon.toFixed(5)}</strong>.<br><br>
-          Your class's current location is <strong>Latitude: ${classLat.toFixed(5)}, Longitude: ${classLon.toFixed(5)}</strong>.<br><br>
-        You are <strong>${distanceRounded} miles</strong> away from <strong>${courseName}</strong>.
-      `;
-      resultEl.className = "status " + (status === "present" ? "present" : "absent");
-    },
-    error => {
-      console.error(error);
-      loadingEl.textContent = "Location access denied or error.";
-    },
-    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-  );
-}
-
-
-  if (!courseName) {
-    loadingEl.textContent = "No class selected. Please return to My Classes.";
-  } else {
-    db.ref(`Classes/${courseName}`).once('value').then(snapshot => {
-      if (snapshot.exists()) {
-        const classLocation = snapshot.val();
-        console.log("Fetched class location:", classLocation);
-        markAttendance(classLocation);
-      } else {
-        loadingEl.textContent = "Class location not found.";
-      }
-    }).catch(error => {
-      console.error(error);
-      loadingEl.textContent = "Error fetching class location.";
-    });
-  }
+      db.ref(`Classes/${courseName}`).once('value').then(snapshot => {
+        if (snapshot.exists()) {
+          const classLocation = snapshot.val();
+          console.log("Fetched class location:", classLocation);
+          markAttendance(classLocation);
+        } else {
+          loadingEl.textContent = "Class location not found.";
+        }
+      }).catch(error => {
+        console.error(error);
+        loadingEl.textContent = "Error fetching class location.";
+      });
+    }
 </script>
 
 </body>
