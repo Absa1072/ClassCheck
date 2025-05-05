@@ -96,6 +96,7 @@
     </div>
 
     <h2>Welcome, <span id="name">...</span></h2>
+    <p>Please select the class you want to mark your attendance for.</p>
     <p>Here are your current classes:</p>
 
     <div id="classList"></div>
@@ -122,31 +123,53 @@
     const netID = localStorage.getItem("netID");
     document.getElementById("name").textContent = netID;
 
-    get(child(ref(db), `Users/${netID}`)).then(snapshot => {
-      if (snapshot.exists()) {
-        const student = snapshot.val();
-        const listDiv = document.getElementById("classList");
+    (async () => {
+  try {
+    const netID = localStorage.getItem("netID");
+    if (!netID) {
+      alert("netID not found. Please log in first.");
+      return;
+    }
 
-        if (student.classes && Array.isArray(student.classes)) {
-          student.classes.forEach(classID => {
-            const btn = document.createElement("button");
-            btn.className = "button";
-            btn.textContent = `Mark attendance for ${classID}`;
-            btn.onclick = () => {
-              localStorage.setItem("selectedClass", classID); 
-              window.location.href = "attendance.html"; 
-            };
-            listDiv.appendChild(btn);
-          });
-        } else {
-          listDiv.textContent = "You are not registered for any classes.";
-        }
-      } else {
-        document.getElementById("classList").textContent = "No profile found.";
+    const getProfile = await fetch(`http://localhost:3000/get-user?netID=${netID}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
       }
-    }).catch(error => {
-      console.error(error);
     });
+
+    const result = await getProfile.json();
+
+    if (getProfile.ok) {
+      console.log('Profile has been received via API:', result);
+      localStorage.setItem('userProfile', JSON.stringify(result));
+
+      document.getElementById("name").textContent = result.firstName || netID;
+
+      const classList = document.getElementById("classList");
+      classList.innerHTML = "";
+
+      result.classes.forEach(courseName => {
+        const button = document.createElement("button");
+        button.className = "button";
+        button.textContent = courseName;
+
+        button.addEventListener("click", () => {
+          localStorage.setItem("selectedCourse", courseName);
+          window.location.href = "attendance.html";
+        });
+
+        classList.appendChild(button);
+      });
+
+    } else {
+      throw new Error(result.error || 'UNKNOWN ERROR');
+    }
+  } catch (error) {
+    console.error('Error getting the profile:', error);
+    alert('Failed to get profile via API');
+  }
+})();
 
     function logout() {
       const returnTo = window.location.hostname.includes('localhost') 
@@ -161,3 +184,4 @@
 
 </body>
 </html>
+
