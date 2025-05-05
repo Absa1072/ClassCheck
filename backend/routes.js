@@ -1,6 +1,55 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../database/db'); 
+const { transporter } = require('./server');
+
+// UC3: Absence Inform 
+router.post('/absenceinform', (req, res) => {
+    const { netID, date } = req.body;
+
+    if (!netID || !date) {
+        return res.status(400).json({ error: 'Missing netID or date parameter' });
+    }
+
+    const studentQuery = `
+        SELECT name, email
+        FROM UserProfile
+        WHERE net_id = ?
+    `;
+
+    db.query(studentQuery, [netID], async (err, results) => {
+        if (err) {
+            console.error('Database query error:', err);
+            return res.status(500).json({ error: 'Failed to fetch student details' });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({ error: 'Student not found for given netID' });
+        }
+
+        const student = results[0];
+        const studentName = student.name;
+        const studentEmail = student.email;
+
+        const mailOptions = {
+            from: 'your-email@gmail.com',  // replace with your Gmail
+            to: studentEmail,
+            subject: `Absence Notification for ${studentName}`,
+            text: `STUDENT NAME: ${studentName} absent on ${date}. Please reach out to your teacher if you think this was a mistake.`
+        };
+
+        try {
+            const info = await transporter.sendMail(mailOptions);
+            console.log('Email sent: ' + info.response);
+            res.status(200).json({ message: 'Absence email sent successfully' });
+        } catch (error) {
+            console.error('Error sending absence email:', error);
+            res.status(500).json({ error: 'Failed to send absence email' });
+        }
+    });
+});
+
+
 
 // UC2: Create Attendance Reports
 router.get('/attendance/reports', (req, res) => {
