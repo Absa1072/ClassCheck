@@ -139,8 +139,8 @@
   <button class="button" onclick="submitProfile()">Save Profile</button>
 </div>
 
-<!--<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>-->
-<!--<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>-->
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
 
 <script>
 
@@ -156,8 +156,8 @@
   };
 
 
-  //firebase.initializeApp(firebaseConfig);
-  //const db = firebase.database();
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
   
   async function submitProfile() {
   const firstName = document.getElementById('firstName').value.trim();
@@ -185,7 +185,7 @@
 
     // api POST to firebase database + testing using API to see if the route works
   try {
-      const newProfile = await fetch('https://classcheck.onrender.com/create-profile', {
+      const newProfile = await fetch("http://localhost:3000/create-profile", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -197,7 +197,8 @@
 
       if(newProfile.ok){
         console.log('Profile has been saved via API:', result);
-        localStorage.setItem('userProfile', JSON.stringify(profile));
+       // localStorage.setItem('userProfile', JSON.stringify(profile));
+        localStorage.setItem('netID', netID);
         alert('Profile completed via API');
         window.location.href = "myClasses.html";
       } else {
