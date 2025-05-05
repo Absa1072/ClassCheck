@@ -5,16 +5,10 @@ const path = require('path');
 const { auth, requiresAuth } = require('express-openid-connect');
 const admin = require('firebase-admin');
 const serviceAccount = require("./serviceAccountKey.json");
-const app = express();
+const routes = require('./routes');
 const nodemailer = require('nodemailer');
-//send mail via gmail to student
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: 'ClassCheckMail@gmail.com',
-        pass: 'qpncibsiedepdwke'
-    }
-});
+
+const app = express();
 
 app.use(cors({
   origin: ['http://127.0.0.1:5500', 'http://localhost:5500', 'https://absa1072.github.io', 'http://localhost:3000'], 
@@ -104,7 +98,7 @@ app.post('/create-teacher-profile', async (req, res) => {
   }
 });
 
-//Get user from database API
+//Get student user from database API
 app.get('/get-user', async (req, res) => {
   const netID = req.query.netID;
 
@@ -123,7 +117,31 @@ app.get('/get-user', async (req, res) => {
 
     return res.status(200).json(userData);
     } catch (error) {
-      console.error('Error saving profile', err);
+      console.error('Error saving profile', error);
+      res.status(500).json({error: 'Failed to get profile'});
+  }
+});
+
+// Get professor from database API
+app.get('/get-prof', async (req, res) => {
+  const netID = req.query.netID;
+
+  if(!netID){
+    return res.status(400).json({error:' Missing netID, cannot get user'});
+  }
+
+  try {
+    const profRef = db.ref(`Professors/${netID}`);
+    const snapshot = await profRef.once('value');
+    const userData = snapshot.val(); 
+
+    if(!userData){
+      return res.status(400).json({error: 'Missing user data/user not found'});
+    } 
+
+    return res.status(200).json(userData);
+    } catch (error) {
+      console.error('Error saving profile', error);
       res.status(500).json({error: 'Failed to get profile'});
   }
 });
@@ -158,8 +176,8 @@ app.post('/save-location', async(req, res) => {
       netID,
       courseName,
       status,
-      date: new Date().toLocaleDateString(),
-      time: new Date().toLocaleTimeString(),
+      date: date || new Date().toISOString().split('T')[0],
+      time,
       lat,
       lon
     });
@@ -171,9 +189,47 @@ app.post('/save-location', async(req, res) => {
   }
 });
 
+// api for emailing user
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'ClassCheckMail@gmail.com',
+        pass: 'ClassChecker123!'
+    }
+});
+
+app.use('/', routes);
+
+
+// get students attendance from firebase API
+app.get('/get-student-attendance', async(req,res) => {
+  const netID = req.query.netID;
+
+  if(!netID){
+    return res.status(400).json({error: 'Missing netID'});
+  }
+
+  try {
+    const studentRef = db.ref(`AttendanceRecords/${netID}`);
+    const snapshot = await studentRef.once('value');
+    const data = snapshot.val();
+
+    if(!data){
+      return res.status(404).json({error: 'No attendance records found'});
+    }
+
+    res.status(200).json(data);
+  } catch (err) {
+    console.error('Error getting attendance', err);
+    res.status(500).json({error: 'Failed to get attendance'});
+  }
+});
 
 // Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+
+
