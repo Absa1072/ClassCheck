@@ -7,7 +7,7 @@ const admin = require('firebase-admin');
 const serviceAccount = require("./serviceAccountKey.json");
 const app = express();
 const nodemailer = require('nodemailer');
-
+//send mail via gmail to student
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
