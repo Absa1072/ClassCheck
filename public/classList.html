@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Class Roster – ClassCheck</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background-color: #fdf6f0;
+      margin: 0;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .container {
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.1);
+      max-width: 800px;
+      width: 100%;
+    }
+    h2 {
+      text-align: center;
+      color: #3b3b3b;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 30px;
+    }
+    th, td {
+      padding: 12px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+      font-weight: 600;
+    }
+    tr:nth-child(even) {
+      background-color: #fafafa;
+    }
+    .back-button {
+      margin-bottom: 20px;
+      background: #ffd5ec;
+      color: #333;
+      border: none;
+      border-radius: 20px;
+      padding: 10px 20px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .back-button:hover {
+      background: #ffe1f1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Class Roster</h2>
+    <h3 id="classTitle">Loading class...</h3>
+    <table id="rosterTable" style="display: none;">
+      <thead>
+        <tr>
+          <th>Student Name</th>
+          <th>NetID</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <p id="statusMessage" style="text-align: center; margin-top: 20px;"></p>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyC59MPssGSBhB4R4jDYjWv-D-hG1gl0hEA",
+      authDomain: "causal-cacao-457203-s1.firebaseapp.com",
+      databaseURL: "https://causal-cacao-457203-s1-default-rtdb.firebaseio.com",
+      projectId: "causal-cacao-457203-s1",
+      storageBucket: "causal-cacao-457203-s1.appspot.com",
+      messagingSenderId: "604345231228",
+      appId: "1:604345231228:web:c61b68eccff94d1d5826f9"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const selectedClass = localStorage.getItem("selectedClass");
+    document.getElementById("classTitle").textContent = selectedClass || "No class selected";
+
+    async function loadClassRoster() {
+      if (!selectedClass) {
+        document.getElementById("statusMessage").textContent = "No class selected.";
+        return;
+      }
+
+      try {
+        const snapshot = await db.ref("Users").get();
+        if (!snapshot.exists()) {
+          document.getElementById("statusMessage").textContent = "No student records found.";
+          return;
+        }
+
+        const table = document.getElementById("rosterTable");
+        const tbody = table.querySelector("tbody");
+        let found = false;
+
+        snapshot.forEach(userSnap => {
+          const user = userSnap.val();
+          if (user.classes && Array.isArray(user.classes)) {
+            if (user.classes.includes(selectedClass)) {
+              const row = `<tr>
+                <td>${user.firstName || ''} ${user.lastName || ''}</td>
+                <td>${user.netID || ''}</td>
+              </tr>`;
+              tbody.insertAdjacentHTML("beforeend", row);
+              found = true;
+            }
+          }
+        });
+
+        if (found) {
+          table.style.display = "table";
+        } else {
+          document.getElementById("statusMessage").textContent = "No students enrolled in this class.";
+        }
+
+      } catch (error) {
+        console.error("Error fetching roster:", error);
+        document.getElementById("statusMessage").textContent = "Failed to load student list.";
+      }
+    }
+
+    loadClassRoster();
+  </script>
+</body>
+</html>
