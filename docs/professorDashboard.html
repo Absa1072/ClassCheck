@@ -83,17 +83,14 @@
 <div class="container">
 
   <div class="top-buttons">
-    <!--<button id="reportButton" class="report-button">Reports</button>-->
+    <button id="reportButton" class="report-button">Reports</button>
     <button id="logoutButton" class="logout-button">Logout</button>
   </div>
 
-  <h2>Welcome, Professor <span id="name">Loading...</span> </h2>
-  <p>Click on the class you want to generate attendance reports and summaries for.</p>
+  <h2>Welcome, Professor <span id="professorName">Loading...</span> </h2>
   <p>Here are the classes you're teaching:</p>
 
-  <div id="classList">
-    
-  </div>
+  <div id="classList"></div>
 
 </div>
 
@@ -108,63 +105,70 @@
     projectId: "causal-cacao-457203-s1",
     storageBucket: "causal-cacao-457203-s1.appspot.com",
     messagingSenderId: "604345231228",
-    appId: "1:604345231228:web:c61b68eccff94d1d5826f9",
-    measurementId: "G-MJMBCWMNKP"
+    appId: "1:604345231228:web:c61b68eccff94d1d5826f9"
   };
 
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
 
-    const netID = localStorage.getItem("netID");
-    document.getElementById("name").textContent = netID;
+  async function loadProfessorProfile() {
+    let profile = localStorage.getItem('professorProfile');
 
-    (async () => {
-  try {
-    const netID = localStorage.getItem("netID");
-    if (!netID) {
-      alert("netID not found. Please log in first.");
-      return;
-    }
-
-    const getProfile = await fetch(`http://localhost:3000/get-prof?netID=${netID}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
+    if (profile) {
+      profile = JSON.parse(profile);
+      showDashboard(profile);
+    } else {
+      const netID = localStorage.getItem('netID');
+      if (!netID) {
+        alert("NetID not found. Please log in again.");
+        window.location.href = "index.html";
+        return;
       }
+      try {
+        const snapshot = await db.ref("Professors/" + netID).get();
+        if (snapshot.exists()) {
+          profile = snapshot.val();
+          localStorage.setItem('professorProfile', JSON.stringify(profile)); 
+          showDashboard(profile);
+        } else {
+          alert("Profile not found. Please complete your professor profile.");
+          window.location.href = "profileProfessor.html";
+        }
+      } catch (error) {
+        console.error("Error fetching professor profile:", error);
+        alert("Something went wrong loading your profile.");
+      }
+    }
+  }
+
+  function showDashboard(profile) {
+    document.getElementById("professorName").textContent = profile.firstName;
+    const classListDiv = document.getElementById("classList");
+    classListDiv.innerHTML = "";
+
+    profile.classes.forEach(course => {
+      const btn = document.createElement("button");
+      btn.className = "button";
+      btn.textContent = course;
+      btn.onclick = () => {
+        localStorage.setItem("selectedClass", course);
+        window.location.href = "classList.html";
+      };
+      classListDiv.appendChild(btn);
     });
 
-    const result = await getProfile.json();
-
-    if (getProfile.ok) {
-      console.log('Profile has been received via API:', result);
-      localStorage.setItem('userProfile', JSON.stringify(result));
-
-      document.getElementById("name").textContent = result.firstName || netID;
-
-      const classList = document.getElementById("classList");
-      classList.innerHTML = "";
-
-      result.classes.forEach(courseName => {
-        const button = document.createElement("button");
-        button.className = "button";
-        button.textContent = courseName;
-
-        button.addEventListener("click", () => {
-          localStorage.setItem("selectedCourse", courseName);
-          window.location.href = "report.html";
-        });
-
-        classList.appendChild(button);
-      });
-
-    } else {
-      throw new Error(result.error || 'UNKNOWN ERROR');
-    }
-  } catch (error) {
-    console.error('Error getting the profile:', error);
-    alert('Failed to get profile via API');
+    const exceptionBtn = document.createElement("button");
+    exceptionBtn.className = "button";
+    exceptionBtn.textContent = "Review Attendance Exceptions";
+    exceptionBtn.style.background = "#fda4af";  
+    exceptionBtn.style.color = "#3b3b3b";
+    exceptionBtn.style.fontWeight = "700";
+    exceptionBtn.style.boxShadow = "0 4px 12px rgba(255, 105, 135, 0.2)";
+    exceptionBtn.onclick = () => {
+      window.location.href = "reviewExceptions.html";
+    };
+    classListDiv.appendChild(exceptionBtn);
   }
-})();
 
   function logout() {
     const returnTo = window.location.hostname.includes('localhost') 
@@ -174,10 +178,11 @@
   }
 
   document.getElementById("logoutButton").addEventListener("click", logout);
-  // document.getElementById("reportButton").addEventListener("click", () => {
-  //   window.location.href = "report.html";
-  // });
+  document.getElementById("reportButton").addEventListener("click", () => {
+    window.location.href = "report.html";
+  });
 
+  loadProfessorProfile();
 </script>
 
 </body>
