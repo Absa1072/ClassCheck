@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Create Account – ClassCheck</title>
+  <title>Professor Login – ClassCheck</title>
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
@@ -111,54 +111,80 @@
     }
   </style>
 </head>
-<script>
-  let isLogin = true;
-
-  function toggleForms() {
-    isLogin = !isLogin;
-    document.getElementById("loginForm").style.display = isLogin ? "block" : "none";
-    document.getElementById("signupForm").style.display = isLogin ? "none" : "block";
-
-    document.getElementById("loginMessage").style.display = isLogin ? "block" : "none";
-    document.getElementById("signupMessage").style.display = isLogin ? "none" : "block";
-
-    event.target.innerText = isLogin ? "Switch to Sign Up" : "Switch to Login";
-  }
-</script>
-
 <body>
-
   <div class="container">
     <div class="title-wrapper">
-      <h2>Create Account</h2>
+      <h2>Professor Login</h2>
       <svg class="checkmark" viewBox="0 0 24 24">
         <path d="M5 13l4 4L19 7" />
       </svg>
     </div>
 
-    <p id="loginMessage">Welcome back! Please log in to your account.</p>
-    <p id="signupMessage" style="display:none;">Let's get your profile set up in less than 2 minutes.</p>
+    <p>Welcome back! Please log in to your account.</p>
 
-    <!-- Login Form -->
-<form id="loginForm" class="active">
-  <input type="email" id="loginEmail" placeholder="Rutgers Email" required />
-  <input type="password" id="loginPassword" placeholder="Password" required>
-  <button type="submit" class="button">Login</button>
-</form>
+    <form id="loginForm">
+      <input type="text" id="netID" placeholder="Rutgers NetID" required />
+      <input type="password" id="loginPassword" placeholder="Password" required />
+      <button type="submit" class="button">Login</button>
+    </form>
 
-<!-- Sign-Up Form -->
-<form id="signupForm" style="display:none;">
-  <input type="text" id="firstName" placeholder="First Name" required>
-  <input type="text" id="lastName" placeholder="Last Name" required>
-  <input type="text" id="signupNetID" placeholder="NetID" required>
-  <input type="email" id="email" placeholder="Rutgers Email" required>
-  <input type="password" id="signupPassword" placeholder="Create Password" required>
-  <button type="submit" class="button">Create Account</button>
-</form>
-
-<!-- Toggle Button -->
-<button class="button" style="background:#ffd5ec; margin-top:15px;" onclick="toggleForms()">Switch to Sign Up</button>
+    <a href="index.html">
+      <button class="button" style="background:#ffd5ec; margin-top:15px;">Back to Sign Up</button>
+    </a>
   </div>
 
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyC59MPssGSBhB4R4jDYjWv-D-hG1gl0hEA",
+      authDomain: "causal-cacao-457203-s1.firebaseapp.com",
+      databaseURL: "https://causal-cacao-457203-s1-default-rtdb.firebaseio.com",
+      projectId: "causal-cacao-457203-s1",
+      storageBucket: "causal-cacao-457203-s1.appspot.com",
+      messagingSenderId: "604345231228",
+      appId: "1:604345231228:web:c61b68eccff94d1d5826f9"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    document.getElementById("loginForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const netID = document.getElementById("netID").value.trim();
+      const password = document.getElementById("loginPassword").value.trim();
+
+      if (!netID || !password) {
+        alert("Please fill out all fields.");
+        return;
+      }
+
+      db.ref("Professors/" + netID).once("value")
+        .then(snapshot => {
+          if (!snapshot.exists()) {
+            alert("Professor not found. Please complete your profile.");
+            return;
+          }
+
+          const user = snapshot.val();
+
+          if (user.password === password) {
+            localStorage.setItem("netID", user.netID);
+            localStorage.setItem("name", user.firstName + " " + user.lastName);
+            localStorage.setItem("role", user.role);
+            localStorage.setItem("classes", JSON.stringify(user.classes));
+            localStorage.setItem("professorProfile", JSON.stringify(user));
+            window.location.href = "professorDashboard.html";
+          } else {
+            alert("Incorrect password.");
+          }
+        })
+        .catch(error => {
+          console.error("Login error:", error);
+          alert("An error occurred during login.");
+        });
+    });
+  </script>
 </body>
 </html>
