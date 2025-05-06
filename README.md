@@ -11,11 +11,19 @@ ClassCheck is a web-based platform that makes it easier for both students and te
 - **Automated Syncing** – Attendance data is stored and updated in real-time.
 
 ## How to Run
- - 1. Download the GitHub Repository
- - 2. In your terminal, run node server.js
- - 3. If the terminal returns 'server 3000,' then the server has launched
- - 4. Right-click and run index.html
-  
+1. Download the GitHub Repository
+2. Type the following bash commands into the terminal:
+      -npm install express
+      -npm install dotenv
+      -npm install path
+      -npm install express-openid-connect
+      -npm install cors
+      -npm install firebase-admin
+      -npm install nodemailer
+4. In your terminal, run node server.js
+5. If the terminal returns 'server 3000,' then the server has launched
+6. Right-click and run index.html
+
 
 ## License
 Have a look at the license file for details. 
