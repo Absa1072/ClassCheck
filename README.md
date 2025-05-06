@@ -13,16 +13,17 @@ ClassCheck is a web-based platform that makes it easier for both students and te
 ## How to Run
 1. Download the GitHub Repository
 2. Type the following bash commands into the terminal:
-      -npm install express
-      -npm install dotenv
-      -npm install path
-      -npm install express-openid-connect
-      -npm install cors
-      -npm install firebase-admin
-      -npm install nodemailer
+- npm install express
+- npm install dotenv
+- npm install path
+- npm install express-openid-connect
+- npm install cors
+- npm install firebase-admin
+- npm install nodemailer
 4. In your terminal, run node server.js
-5. If the terminal returns 'server 3000,' then the server has launched
+5. If the terminal returns 'server running on port 3000,' then the server has launched
 6. Right-click and run index.html
+7. Go all the way to the profile page. If the student profile does not work, go back to vscode /public/profile.html and right-click and run using live server
 
 
 ## License
