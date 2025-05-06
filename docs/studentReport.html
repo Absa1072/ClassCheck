@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Student Attendance Overview – ClassCheck</title>
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
   <style>
@@ -16,7 +16,6 @@
       align-items: flex-start;
       min-height: 100vh;
     }
-
     .container {
       background: #ffffff;
       padding: 40px;
@@ -25,21 +24,19 @@
       margin-top: 60px;
       max-width: 900px;
       width: 90%;
+      position: relative;
     }
-
     h2 {
       color: #3b3b3b;
       font-size: 2rem;
       text-align: center;
       margin-bottom: 20px;
     }
-
     label {
       font-weight: 600;
       margin-right: 10px;
     }
-
-    input, select {
+    input {
       padding: 10px;
       border: 1px solid #ccc;
       border-radius: 10px;
@@ -49,7 +46,6 @@
       margin-right: 10px;
       margin-bottom: 15px;
     }
-
     .button {
       font-size: 16px;
       padding: 10px 20px;
@@ -61,30 +57,43 @@
       cursor: pointer;
       transition: background 0.3s ease, transform 0.2s ease;
     }
-
     .button:hover {
       background: #d0efff;
       transform: scale(1.05);
     }
-
+    .print-button {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      background: #ffd5ec;
+      color: #212020;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+    .print-button:hover {
+      background: #ffe1f1;
+      transform: scale(1.05);
+    }
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 30px;
     }
-
     th, td {
       border: 1px solid #ddd;
       padding: 12px;
       text-align: left;
     }
-
     th {
       background-color: #f2f2f2;
       color: #333;
       font-weight: 600;
     }
-
     tr:nth-child(even) {
       background-color: #fafafa;
     }
@@ -92,6 +101,8 @@
 </head>
 <body>
   <div class="container">
+    <button class="print-button" onclick="window.print()">Print / Download</button>
+
     <h2>Student Attendance Report</h2>
     <div>
       <label for="netID">Student NetID:</label>
@@ -102,7 +113,7 @@
     <table id="studentReportTable" style="display:none;">
       <thead>
         <tr>
-          <th>Class</th>
+          <th>Course Name</th>
           <th>Total Sessions</th>
           <th>Sessions Attended</th>
           <th>Attendance %</th>
@@ -122,8 +133,7 @@
       projectId: "causal-cacao-457203-s1",
       storageBucket: "causal-cacao-457203-s1.appspot.com",
       messagingSenderId: "604345231228",
-      appId: "1:604345231228:web:c61b68eccff94d1d5826f9",
-      measurementId: "G-MJMBCWMNKP"
+      appId: "1:604345231228:web:c61b68eccff94d1d5826f9"
     };
 
     firebase.initializeApp(firebaseConfig);
@@ -138,27 +148,47 @@
       if (!netID) return alert("Please enter a valid NetID.");
 
       try {
-        const snapshot = await db.ref(`AttendanceRecords/${netID}`).get();
+        const recordsRef = db.ref("AttendanceRecords/" + netID);
+        const snapshot = await recordsRef.get();
+
         if (!snapshot.exists()) {
-          alert("No attendance data found for this student.");
+          alert("No attendance records found.");
           table.style.display = "none";
           return;
         }
 
-        const records = snapshot.val();
-        for (const classID in records) {
-          const classData = records[classID];
-          const total = classData.totalSessions || 0;
-          const attended = classData.sessionsAttended || 0;
-          const percent = total > 0 ? ((attended / total) * 100).toFixed(1) : '0';
-          const row = `<tr><td>${classID}</td><td>${total}</td><td>${attended}</td><td>${percent}%</td></tr>`;
+        const courseStats = {};
+
+        snapshot.forEach(childSnap => {
+          const record = childSnap.val();
+          const course = record.courseName || "Unknown Course";
+
+          if (!courseStats[course]) {
+            courseStats[course] = { total: 0, attended: 0 };
+          }
+
+          courseStats[course].total += 1;
+          if (record.status && record.status.toLowerCase() === "present") {
+            courseStats[course].attended += 1;
+          }
+        });
+
+        Object.keys(courseStats).forEach(course => {
+          const stat = courseStats[course];
+          const percent = ((stat.attended / stat.total) * 100).toFixed(1);
+          const row = `<tr>
+            <td>${course}</td>
+            <td>${stat.total}</td>
+            <td>${stat.attended}</td>
+            <td>${percent}%</td>
+          </tr>`;
           tbody.insertAdjacentHTML("beforeend", row);
-        }
+        });
 
         table.style.display = "table";
-      } catch (err) {
-        console.error("Error fetching student report:", err);
-        alert("Something went wrong while fetching the report.");
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        alert("Something went wrong while retrieving the report.");
       }
     }
   </script>
