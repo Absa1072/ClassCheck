@@ -74,6 +74,24 @@
   </style>
 </head>
 <body>
+  <a href="professorDashboard.html" style="position: absolute; top: 20px; left: 30px;">
+    <button style="
+      background-color: #ffd5ec;
+      color: #333;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0px 5px 12px rgba(0, 0, 0, 0.05);
+      transition: background 0.3s ease, transform 0.2s ease;
+    "
+    onmouseover="this.style.background='#ffe1f1'; this.style.transform='scale(1.05)';"
+    onmouseout="this.style.background='#ffd5ec'; this.style.transform='scale(1)';"
+    >
+      Back to Dashboard
+    </button>
+  </a>
   <div class="container">
     <h2>Review Attendance Exceptions</h2>
     <table id="exceptionTable" style="display: none;">
@@ -84,7 +102,6 @@
           <th>Class</th>
           <th>Date</th>
           <th>Reason</th>
-          <th>Additional Notes</th>
           <th>Status</th>
           <th>Action</th>
         </tr>
@@ -132,34 +149,37 @@
         const professorData = profSnapshot.val();
         const professorNetID = professorData.netID;
 
-        const exceptionSnapshot = await db.ref("AttendanceExceptions").get();
-        if (!exceptionSnapshot.exists()) {
+        const exceptionsRef = db.ref("AttendanceExceptions/" + professorNetID);
+        const exceptionsSnapshot = await exceptionsRef.get();
+
+        if (!exceptionsSnapshot.exists()) {
           statusMessage.textContent = "No exception requests found.";
           return;
         }
 
         let found = false;
-        exceptionSnapshot.forEach(child => {
-          const data = child.val();
-          const exceptionKey = child.key;
-          if (data.professorNetID === professorNetID) {
+        exceptionsSnapshot.forEach(classSnap => {
+          const classID = classSnap.key;
+          classSnap.forEach(entry => {
+            const data = entry.val();
+            const entryKey = `${professorNetID}/${classID}/${entry.key}`;
+
             const row = document.createElement("tr");
             row.innerHTML = `
               <td>${data.studentName || ''}</td>
               <td>${data.studentNetID || ''}</td>
-              <td>${data.classID || ''}</td>
+              <td>${data.classID || classID}</td>
               <td>${data.date || ''}</td>
               <td>${data.reason || ''}</td>
-              <td>${data.additionalNotes || ''}</td>
-              <td id="status-${exceptionKey}">${data.status || 'Pending'}</td>
+              <td id="status-${entryKey.replaceAll("/", "_")}">${data.status || 'Pending'}</td>
               <td>
-                <button class="action-btn approve" onclick="updateStatus('${exceptionKey}', 'Approved')">Approve</button>
-                <button class="action-btn reject" onclick="updateStatus('${exceptionKey}', 'Rejected')">Reject</button>
+                <button class="action-btn approve" onclick="updateStatus('${entryKey}', 'Approved')">Approve</button>
+                <button class="action-btn reject" onclick="updateStatus('${entryKey}', 'Rejected')">Reject</button>
               </td>
             `;
             tbody.appendChild(row);
             found = true;
-          }
+          });
         });
 
         if (found) {
@@ -174,11 +194,15 @@
       }
     }
 
-    function updateStatus(key, newStatus) {
-      const statusRef = db.ref("AttendanceExceptions/" + key + "/status");
-      statusRef.set(newStatus)
+    function updateStatus(pathKey, newStatus) {
+      const pathParts = pathKey.split("/");
+      const [profNetID, classID, entryID] = pathParts;
+      const fullPath = `AttendanceExceptions/${profNetID}/${classID}/${entryID}/status`;
+
+      db.ref(fullPath).set(newStatus)
         .then(() => {
-          document.getElementById(`status-${key}`).textContent = newStatus;
+          const statusCellId = `status-${pathKey.replaceAll("/", "_")}`;
+          document.getElementById(statusCellId).textContent = newStatus;
         })
         .catch(error => {
           console.error("Failed to update status:", error);
