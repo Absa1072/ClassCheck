@@ -7,22 +7,23 @@ const admin = require('firebase-admin');
 const serviceAccount = require("./serviceAccountKey.json");
 const routes = require('./routes');
 const nodemailer = require('nodemailer');
+//const { initializeApp } = require('firebase-admin/app');
 
 const app = express();
 
 app.use(cors({
   origin: ['http://127.0.0.1:5500', 'http://localhost:5500', 'https://absa1072.github.io', 'http://localhost:3000'], 
-  methods: ['GET', 'POST'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }));
 
 
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'docs')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: `https://${serviceAccount.project_id}-default-rtdb.firebaseio.com`
+  databaseURL: `https://causal-cacao-457203-s1-default-rtdb.firebaseio.com`
 });
 
 const db = admin.database();
