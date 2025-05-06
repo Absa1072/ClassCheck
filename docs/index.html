@@ -19,26 +19,27 @@
 
     .container {
       background: #ffffff;
-      padding: 60px 50px;
-      border-radius: 24px;
-      box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.08);
-      max-width: 480px;
-      width: 90%;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.1);
       text-align: center;
+      max-width: 500px;
+      width: 90%;
+    }
+
+    .title-wrapper {
       display: flex;
-      flex-direction: column;
       align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 10px;
+      cursor: pointer;
     }
 
-    .logo {
-      width: 400px;
-      margin-bottom: 20px;
-    }
-
-    .checkmark {
-      width: 36px;
-      height: 36px;
-      margin-bottom: 30px;
+    h2 {
+      color: #3b3b3b;
+      font-size: 2rem;
+      margin: 0;
     }
 
     .checkmark path {
@@ -48,33 +49,30 @@
       stroke-linecap: round;
       stroke-linejoin: round;
       stroke-dasharray: 22;
+      stroke-dashoffset: 22;
+      transition: stroke-dashoffset 0.5s ease;
+    }
+
+    .title-wrapper:hover .checkmark path {
       stroke-dashoffset: 0;
     }
 
-    h2 {
-      font-size: 2rem;
-      color: #db619e;
-      margin-bottom: 10px;
+    .checkmark {
+      width: 36px;
+      height: 36px;
+      stroke-dashoffset: 0;
+      transition: none; 
     }
 
     p {
-      color: #555;
-      font-size: 1.1rem;
-      margin-bottom: 40px;
-      line-height: 1.5;
-    }
-
-    .buttons-group {
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-      gap: 15px;
-      margin-bottom: 30px;
+      color: #666;
+      font-size: 1.5rem;
+      margin-bottom: 50px;
     }
 
     .button {
       font-size: 16px;
-      padding: 14px;
+      padding: 12px 24px;
       background: #ffd5ec;
       color: #333;
       border: none;
@@ -82,80 +80,60 @@
       font-weight: 600;
       cursor: pointer;
       transition: background 0.3s ease, transform 0.2s ease;
+      margin: 10px;
       box-shadow: 0px 5px 12px rgba(0, 0, 0, 0.05);
-      width: 100%;
     }
 
     .button:hover {
       background: #ffe1f1;
-      transform: scale(1.03);
+      transform: scale(1.05);
     }
 
-    .footer-links {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-    }
-
-    .footer-links button {
-      background-color: transparent;
-      border: none;
-      color: #b05683;
-      font-size: 0.95rem;
-      cursor: pointer;
-      text-decoration: underline;
-    }
-
-    .footer-links button:hover {
-      color: #333;
+    form, a {
+      display: block;
+      margin-bottom: 10px;
     }
 
     @media (max-width: 480px) {
-      .container {
-        padding: 40px 20px;
+      .button {
+        width: 100%;
       }
     }
+    .logo {
+        width: 400px; 
+        height: auto;
+        margin-bottom: 10px;
+        }
   </style>
 </head>
 <body>
-  <div class="container">
-    <img src="CC_logo.png" alt="ClassCheck Logo" class="logo">
-    <!-- <svg class="checkmark" viewBox="0 0 24 24"> -->
-      <path d="M5 13l4 4L19 7" />
-    
-    <h2>Welcome to ClassCheck</h2>
-    <p>Your automated attendance tracker for Rutgers University. Built for students and professors alike.</p>
 
-    <div class="buttons-group">
-      <a href="studentOrProfessor.html"><button type="button" class="button">Sign Up</button></a>
-      <button type="button" class="button" onclick="redirectToAuth0Login()">Log In</button>
+  <div class="container">
+    <div class="title-wrapper">
+      <img src="CC_logo.png" alt="ClassCheck Logo" class="logo">
+      <svg class="checkmark" viewBox="0 0 24 24">
+        <path d="M5 13l4 4L19 7" />
+      </svg>
     </div>
-    <div class="footer-links">
-      <form action="tutorial.html" method="GET"> 
-        <button type="submit">Tutorial</button>
-      </form>
-      <form action="FAQ.html" method="GET"> 
-        <button type="submit">FAQs</button>
-      </form>
-    </div>
+    
+    <p>Welcome students and professors to your automated attendance tracker at Rutgers University!</p>
+
+    <a href="studentOrProfessor.html"> 
+      <button type="button" class="button">Sign Up</button>
+    </a>   
+
+    <a href="loginAsStudentOrProf.html">
+      <button type="button" class="button">Login</button>
+    </a>
+
+    <form action="tutorial.html" method="GET"> 
+      <button type="submit" class="button">Tutorial</button>
+    </form>
+
+    <form action="FAQ.html" method="GET"> 
+      <button type="submit" class="button">FAQs</button>
+    </form>
   </div>
 
-  <script>
-    function redirectToAuth0Login() {
-      const domain = "https://dev-csb64xqu8rysh5zp.us.auth0.com";
-      const clientId = "VJwDlz26K2Duzl8GpWxOTHPpAnxs5nPE";
-      const redirectUri = window.location.hostname.includes("localhost")
-        ? "http://localhost:3001/callback"
-        : "https://absa1072.github.io/ClassCheck/callback.html";
-
-      const loginUrl = `${domain}/authorize` +
-        `?response_type=code` +
-        `&client_id=${clientId}` +
-        `&redirect_uri=${encodeURIComponent(redirectUri)}` +
-        `&scope=openid%20profile%20email`;
-
-      window.location.href = loginUrl;
-    }
-  </script>
 </body>
 </html>
