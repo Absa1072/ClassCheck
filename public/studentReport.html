@@ -113,7 +113,7 @@
     <table id="studentReportTable" style="display:none;">
       <thead>
         <tr>
-          <th>Class</th>
+          <th>Course Name</th>
           <th>Total Sessions</th>
           <th>Sessions Attended</th>
           <th>Attendance %</th>
@@ -147,55 +147,48 @@
 
       if (!netID) return alert("Please enter a valid NetID.");
 
-      const attendanceRef = db.ref("Attendance");
-      const classStats = {};
-
       try {
-        const snapshot = await attendanceRef.get();
+        const recordsRef = db.ref("AttendanceRecords/" + netID);
+        const snapshot = await recordsRef.get();
+
         if (!snapshot.exists()) {
-          alert("No attendance data found.");
+          alert("No attendance records found.");
           table.style.display = "none";
           return;
         }
 
-        snapshot.forEach(classSnap => {
-          const classID = classSnap.key;
-          let totalSessions = 0;
-          let sessionsAttended = 0;
+        const courseStats = {};
 
-          classSnap.forEach(dateSnap => {
-            totalSessions++;
-            const dailyData = dateSnap.val();
-            for (const studentKey in dailyData) {
-              const record = dailyData[studentKey];
-              if (record.netID === netID && record.attendanceStatus === "Present") {
-                sessionsAttended++;
-              }
-            }
-          });
+        snapshot.forEach(childSnap => {
+          const record = childSnap.val();
+          const course = record.courseName || "Unknown Course";
 
-          if (totalSessions > 0) {
-            const percent = ((sessionsAttended / totalSessions) * 100).toFixed(1);
-            classStats[classID] = { total: totalSessions, attended: sessionsAttended, percent };
+          if (!courseStats[course]) {
+            courseStats[course] = { total: 0, attended: 0 };
+          }
+
+          courseStats[course].total += 1;
+          if (record.status && record.status.toLowerCase() === "present") {
+            courseStats[course].attended += 1;
           }
         });
 
-        if (Object.keys(classStats).length === 0) {
-          alert("No attendance records found for this student.");
-          table.style.display = "none";
-          return;
-        }
-
-        for (const classID in classStats) {
-          const stat = classStats[classID];
-          const row = `<tr><td>${classID}</td><td>${stat.total}</td><td>${stat.attended}</td><td>${stat.percent}%</td></tr>`;
+        Object.keys(courseStats).forEach(course => {
+          const stat = courseStats[course];
+          const percent = ((stat.attended / stat.total) * 100).toFixed(1);
+          const row = `<tr>
+            <td>${course}</td>
+            <td>${stat.total}</td>
+            <td>${stat.attended}</td>
+            <td>${percent}%</td>
+          </tr>`;
           tbody.insertAdjacentHTML("beforeend", row);
-        }
+        });
 
         table.style.display = "table";
-      } catch (err) {
-        console.error("Error fetching student report:", err);
-        alert("Something went wrong while fetching the report.");
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        alert("Something went wrong while retrieving the report.");
       }
     }
   </script>
