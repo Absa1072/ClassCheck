@@ -30,7 +30,7 @@
       margin-bottom: 20px;
     }
 
-    input, textarea, select {
+    input, textarea {
       width: 100%;
       padding: 10px;
       font-size: 1rem;
@@ -59,9 +59,29 @@
   </style>
 </head>
 <body>
+  <a href="myClasses.html" style="position: absolute; top: 20px; left: 30px;">
+    <button style="
+      background-color: #ffd5ec;
+      color: #333;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0px 5px 12px rgba(0, 0, 0, 0.05);
+      transition: background 0.3s ease, transform 0.2s ease;
+    "
+    onmouseover="this.style.background='#ffe1f1'; this.style.transform='scale(1.05)';"
+    onmouseout="this.style.background='#ffd5ec'; this.style.transform='scale(1)';"
+    >
+      Back to Dashboard
+    </button>
+  </a>
   <div class="container">
     <h2>Request Attendance Exception</h2>
     <form id="exceptionForm">
+      <input type="text" id="studentName" placeholder="Your Full Name" required>
+      <input type="text" id="studentNetID" placeholder="Your NetID" required>
       <input type="text" id="profNetID" placeholder="Professor's NetID" required>
       <input type="text" id="classID" placeholder="Class ID (e.g., 14:332:452)" required>
       <input type="date" id="absenceDate" required>
@@ -91,13 +111,14 @@
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
+      const studentName = document.getElementById('studentName').value.trim();
+      const studentNetID = document.getElementById('studentNetID').value.trim();
       const profNetID = document.getElementById('profNetID').value.trim();
       const classID = document.getElementById('classID').value.trim();
       const absenceDate = document.getElementById('absenceDate').value;
       const reason = document.getElementById('reason').value.trim();
-      const studentNetID = localStorage.getItem('netID') || "anonymous";
 
-      if (!profNetID || !classID || !absenceDate || !reason) {
+      if (!studentName || !studentNetID || !profNetID || !classID || !absenceDate || !reason) {
         alert('Please fill out all fields.');
         return;
       }
@@ -105,10 +126,14 @@
       const entryKey = `${studentNetID}_${absenceDate}`;
 
       const exceptionData = {
+        studentName,
         studentNetID,
+        professorNetID: profNetID,
         classID,
         date: absenceDate,
         reason,
+        status: "Pending",
+        additionalNotes: "",
         timestamp: new Date().toISOString()
       };
 
