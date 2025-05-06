@@ -34,7 +34,7 @@
     "firebase-admin": "^13.3.0",
     "jsonwebtoken": "^9.0.2",
     "node-fetch": "^3.3.2"
-  }
+  },
   "devDependencies": {
     "jest": "^29.7.0"
   }
