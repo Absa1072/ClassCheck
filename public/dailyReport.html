@@ -75,7 +75,6 @@
 <body>
 
   <button class="print-button" onclick="window.print()">Print / Download</button>
-
   <h2>Daily Attendance Report</h2>
 
   <div class="input-row">
@@ -87,12 +86,11 @@
   <table id="attendanceTable" style="display: none;">
     <thead>
       <tr>
-        <th>Student Name</th>
         <th>NetID</th>
+        <th>Course Name</th>
+        <th>Date</th>
         <th>Status</th>
-        <th>Time</th>
-        <th>Latitude</th>
-        <th>Longitude</th>
+        <th>Student Location</th>
       </tr>
     </thead>
     <tbody></tbody>
@@ -113,72 +111,76 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-
-    const netID = localStorage.getItem("netID");
     const dropdown = document.getElementById("classDropdown");
+    const netID = localStorage.getItem("netID");
 
     if (!netID) {
       alert("Professor NetID not found. Please log in again.");
       window.location.href = "index.html";
     }
 
+    // Populate class dropdown
     firebase.database().ref("Professors/" + netID).once("value")
       .then(snapshot => {
-        if (snapshot.exists()) {
-          const profile = snapshot.val();
-          dropdown.innerHTML = "";
-          if (profile.classes && profile.classes.length > 0) {
-            profile.classes.forEach(cls => {
-              const option = document.createElement("option");
-              option.value = cls;
-              option.textContent = cls;
-              dropdown.appendChild(option);
-            });
-          } else {
-            dropdown.innerHTML = "<option>No classes found</option>";
-          }
+        const profile = snapshot.val();
+        dropdown.innerHTML = "";
+        if (profile.classes && profile.classes.length > 0) {
+          profile.classes.forEach(cls => {
+            const option = document.createElement("option");
+            option.value = cls;
+            option.textContent = cls;
+            dropdown.appendChild(option);
+          });
         } else {
-          alert("Professor profile not found.");
-          dropdown.innerHTML = "<option>Error loading classes</option>";
+          dropdown.innerHTML = "<option>No classes found</option>";
         }
-      })
-      .catch(error => {
-        console.error("Error fetching professor data:", error);
-        dropdown.innerHTML = "<option>Failed to load classes</option>";
+      }).catch(err => {
+        console.error("Error fetching classes:", err);
+        dropdown.innerHTML = "<option>Error loading classes</option>";
       });
 
     function loadAttendance() {
-      const classId = dropdown.value;
-      const date = document.getElementById("reportDate").value;
-      if (!classId || !date) {
-        alert("Please select a class and date.");
-        return;
-      }
-
-      const reportRef = db.ref(`Attendance/${classId}/${date}`);
+      const classId = dropdown.value.trim();
+      const selectedDate = document.getElementById("reportDate").value;
       const table = document.getElementById("attendanceTable");
       const tbody = table.querySelector("tbody");
       tbody.innerHTML = "";
 
-      reportRef.once("value").then(snapshot => {
-        if (snapshot.exists()) {
-          snapshot.forEach(entry => {
-            const r = entry.val();
-            const row = `<tr>
-              <td>${r.studentName || ''}</td>
-              <td>${r.netID}</td>
-              <td>${r.attendanceStatus}</td>
-              <td>${r.checkinTime || '—'}</td>
-              <td>${r.latitude || '—'}</td>
-              <td>${r.longitude || '—'}</td>
-            </tr>`;
-            tbody.insertAdjacentHTML('beforeend', row);
+      if (!classId || !selectedDate) {
+        alert("Please select both class and date.");
+        return;
+      }
+
+      const formattedDate = new Date(selectedDate).toLocaleDateString("en-US");
+
+      db.ref("AttendanceRecords").once("value").then(snapshot => {
+        let found = false;
+
+        snapshot.forEach(studentSnap => {
+          studentSnap.forEach(recordSnap => {
+            const r = recordSnap.val();
+            if (r.courseName === classId && r.date === formattedDate) {
+              const location = r.studentLocation ? `${r.studentLocation.lat}, ${r.studentLocation.lon}` : "—";
+              const row = `
+                <tr>
+                  <td>${r.netID || ''}</td>
+                  <td>${r.courseName || ''}</td>
+                  <td>${r.date || ''}</td>
+                  <td>${r.status || ''}</td>
+                  <td>${location}</td>
+                </tr>
+              `;
+              tbody.insertAdjacentHTML("beforeend", row);
+              found = true;
+            }
           });
-          table.style.display = 'table';
-        } else {
-          alert("No records found for that class and date.");
-          table.style.display = 'none';
-        }
+        });
+
+        table.style.display = found ? "table" : "none";
+        if (!found) alert("No records found for this class and date.");
+      }).catch(error => {
+        console.error("Error fetching attendance:", error);
+        alert("Failed to load attendance.");
       });
     }
   </script>
