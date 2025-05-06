@@ -90,8 +90,7 @@
   <h2>Welcome, Professor <span id="professorName">Loading...</span> </h2>
   <p>Here are the classes you're teaching:</p>
 
-  <div id="classList">
-  </div>
+  <div id="classList"></div>
 
 </div>
 
@@ -106,8 +105,7 @@
     projectId: "causal-cacao-457203-s1",
     storageBucket: "causal-cacao-457203-s1.appspot.com",
     messagingSenderId: "604345231228",
-    appId: "1:604345231228:web:c61b68eccff94d1d5826f9",
-    measurementId: "G-MJMBCWMNKP"
+    appId: "1:604345231228:web:c61b68eccff94d1d5826f9"
   };
 
   firebase.initializeApp(firebaseConfig);
@@ -154,12 +152,11 @@
       btn.textContent = course;
       btn.onclick = () => {
         localStorage.setItem("selectedClass", course);
-        window.location.href = "professorClassView.html";
+        window.location.href = "classList.html";
       };
       classListDiv.appendChild(btn);
     });
 
-   
     const exceptionBtn = document.createElement("button");
     exceptionBtn.className = "button";
     exceptionBtn.textContent = "Review Attendance Exceptions";
